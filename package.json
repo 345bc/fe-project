@@ -9,7 +9,10 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.12",
     "prettier": "^3.7.4",
+    "tailwindcss": "^4.2.4",
     "turbo": "^2.9.6",
     "typescript": "5.9.2"
   },
@@ -20,5 +23,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "swiper": "^12.1.4"
+  }
 }

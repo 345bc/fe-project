@@ -1,52 +1,191 @@
+/* app/globals.css */
 @import "tailwindcss";
+@theme {
+  /* Brand colors  */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+  /* Primary */
+  --color-primary: #12357a;
+  /* --color-primary-dark: #0d2a63; */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Red (Price & Badge) - Thêm để làm TourCard */
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+
+  /* Green */
+  --color-green-50: #f0fdf4;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+
+  /* Surface */
+  --color-surface: #ffffff;
+  --color-surface-dark: #0f172a;
+  --color-surface-container-low: #f8fafc;
+  --color-surface-container-high: #f1f5f9;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+
+  /* Background */
+  --color-light: #f2f2f2;
+
+  /* Container */
+  --container-7xl: 1440px;
+
+  /* Typography - Đã cập nhật: Heading = Poppins, Body = Inter */
+  --font-headline: "Poppins", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Shadows - Thêm để SearchBar và Card đẹp hơn */
+  --shadow-tour: 0 8px 30px rgba(0, 0, 0, 0.04);
+  --shadow-tour-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Các Utility Class bổ trợ (Layer base/utilities) */
+@layer base {
+  body {
+    @apply font-body text-text-primary bg-white;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-headline;
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.imgDark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-
-  .imgLight {
+@layer utilities {
+  /* Ẩn scrollbar nhưng vẫn scroll được */
+  .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  .imgDark {
-    display: unset;
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Clamp text cho Card */
+  .text-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .text-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* --- CẬP NHẬT MỚI: Hỗ trợ Slider/Carousel --- */
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+  .snap-center {
+    scroll-snap-align: center;
+  }
+  .snap-start {
+    scroll-snap-align: start;
+  }
+}
+/* apps/client/app/globals.css */
+
+/* ==================== WRAPPER CLASSES ==================== */
+@layer components {
+  .wrapper-surface {
+    background-color: var(--color-surface);
+    padding-top: 2rem;
+    padding-bottom: 10rem;
+  }
+
+  .wrapper-surface-low {
+    background-color: var(--color-surface-container-low);
+    padding-top: 2rem;
+    padding-bottom: 10rem;
+  }
+}
+
+/* ==================== CONTAINER CLASSES ==================== */
+@layer components {
+  /* Container rộng hơn (tối đa 1280px, cho nhiều nội dung) */
+  .container-wide {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Container rất rộng (tối đa 1440px, dùng --container-7xl) */
+  .container-main {
+    max-width: var(--container-7xl);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Container hẹp (tối đa 768px, cho blog, article) */
+  .container-narrow {
+    max-width: 768px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Container full width (không giới hạn, vẫn có padding) */
+  .container-fluid {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Container không padding (dùng khi muốn tự xử lý padding) */
+  .container-no-padding {
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* --- CẬP NHẬT MỚI: Nút điều hướng Slider --- */
+  .btn-nav-slider {
+    @apply w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 border border-gray-200 bg-white hover:bg-primary hover:text-white hover:border-primary shadow-sm disabled:opacity-30 disabled:cursor-not-allowed;
+  }
+}
+
+/* Responsive padding cho các container */
+@media (min-width: 640px) {
+  .container-wide,
+  .container-main,
+  .container-narrow,
+  .container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-main,
+  .container-wide,
+  .container-narrow,
+  .container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
