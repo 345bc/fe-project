@@ -83,7 +83,7 @@ const TourCard = ({
           </div>
           <Link
             href={`/tour/${id}`}
-            className="bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-sm hover:bg-[var(--color-surface)] hover:shadow-md hover:text-[var(--color-surface-dark)] hover:border hover:border-[var(--color-primary)] transition-all active:scale-95"
+            className="bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-sm hover:bg-surface hover:shadow-md hover:text-surface-dark hover:border hover:border-primary transition-all active:scale-95"
           >
             Đặt ngay
           </Link>
