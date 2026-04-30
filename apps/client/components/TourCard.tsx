@@ -58,6 +58,7 @@ const TourCard = ({
             {duration}
           </small>
         </div>
+        
 
         {/* card-title */}
         <h5 className="text-[1.25rem] font-bold text-gray-900 mb-3 leading-tight group-hover:text-primary transition-colors line-clamp-2 min-h-[2.4em]">
