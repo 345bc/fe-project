@@ -70,6 +70,8 @@ const BlogCard = ({
   );
 };
 
+import ListSlider from "../ui/ListSlider";
+
 export default function BlogCardSection() {
   const blogData = [
     {
@@ -102,10 +104,22 @@ export default function BlogCardSection() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {blogData.map((blog) => (
-        <BlogCard key={blog.id} {...blog} />
-      ))}
-    </div>
+    <>
+      {/* Mobile View: Swipeable Slider */}
+      <div className="block md:hidden">
+        <ListSlider>
+          {blogData.map((blog) => (
+            <BlogCard key={blog.id} {...blog} />
+          ))}
+        </ListSlider>
+      </div>
+
+      {/* Desktop/Tablet View: Grid */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {blogData.map((blog) => (
+          <BlogCard key={blog.id} {...blog} />
+        ))}
+      </div>
+    </>
   );
 }
