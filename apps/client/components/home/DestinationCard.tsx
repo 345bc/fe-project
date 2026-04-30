@@ -12,7 +12,7 @@ interface DestinationCardProps {
 const DestinationCard = ({ image, title, className }: DestinationCardProps) => {
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl cursor-pointer w-full h-full min-h-[250px] ${className}`}
+      className={`group relative overflow-hidden rounded-2xl cursor-pointer w-full h-full min-h-[140px] md:min-h-[250px] ${className}`}
     >
       <Image
         src={image}
@@ -25,8 +25,8 @@ const DestinationCard = ({ image, title, className }: DestinationCardProps) => {
       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
 
       {/* Title ở chính giữa */}
-      <div className="absolute inset-0 flex items-center justify-center p-4">
-        <h3 className="text-white font-black text-xl md:text-2xl uppercase tracking-widest text-center drop-shadow-lg">
+      <div className="absolute inset-0 flex items-center justify-center p-2 md:p-4">
+        <h3 className="text-white font-black text-lg md:text-2xl uppercase tracking-widest text-center drop-shadow-lg">
           {title}
         </h3>
       </div>
@@ -36,57 +36,57 @@ const DestinationCard = ({ image, title, className }: DestinationCardProps) => {
 
 // 2. Component chính: DestinationGrid
 export default function DestinationGrid() {
-  // Mảng dữ liệu danh mục
+  // Mảng dữ liệu danh mục - Thiết kế Bento Grid cho cả Mobile (2 cột) và Desktop
   const destinations = [
     {
       title: "Quảng Ninh",
       image: "/images/quang-ninh.jpg",
-      className: "md:col-span-2 md:row-span-2",
+      className: "col-span-2 row-span-2 md:col-span-2 md:row-span-2",
     },
     {
       title: "Hà Giang",
       image: "/images/ha-giang.jpg",
-      className: "md:col-span-1 md:row-span-1",
+      className: "col-span-1 row-span-1 md:col-span-1 md:row-span-1",
     },
     {
       title: "Lào Cai",
       image: "/images/lao-cai.jpg",
-      className: "md:col-span-2 md:row-span-1",
+      className: "col-span-1 row-span-1 md:col-span-2 md:row-span-1",
     },
     {
       title: "Sơn La",
       image: "/images/son-la.jpg",
-      className: "md:col-span-1 md:row-span-2",
+      className: "col-span-1 row-span-2 md:col-span-1 md:row-span-2",
     },
     {
       title: "Ninh Bình",
       image: "/images/ninh-binh.jpg",
-      className: "md:col-span-1 md:row-span-1",
+      className: "col-span-1 row-span-1 md:col-span-1 md:row-span-1",
     },
     {
       title: "Yên Bái",
       image: "/images/yen-bai.jpg",
-      className: "md:col-span-2 md:row-span-1",
+      className: "col-span-1 row-span-1 md:col-span-2 md:row-span-1",
     },
     {
       title: "Cao Bằng",
       image: "/images/cao-bang.jpg",
-      className: "md:col-span-2",
+      className: "col-span-2 row-span-1 md:col-span-2",
     },
     {
       title: "Hải Phòng",
       image: "/images/hai-phong.jpg",
-      className: "md:col-span-2",
+      className: "col-span-1 row-span-1 md:col-span-2",
     },
     {
       title: "Hà Nội",
       image: "/images/ha-noi.jpg",
-      className: "md:col-span-2",
+      className: "col-span-1 row-span-1 md:col-span-2",
     },
   ];
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 auto-rows-[250px]">
+    <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 auto-rows-[140px] md:auto-rows-[250px]">
       {destinations.map((dest, index) => (
         <DestinationCard
           key={index}

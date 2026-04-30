@@ -16,9 +16,9 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <header className="relative w-full h-[320px] md:h-[420px] flex items-center justify-center overflow-visible">
+      <header className="relative w-full flex flex-col items-center">
         {/* Background Banner */}
-        <div className="absolute inset-0 z-0">
+        <div className="relative w-full h-[260px] md:h-[420px] z-0">
           <Image
             src="/images/demo_banner.jpg"
             alt="banner"
@@ -29,10 +29,10 @@ export default function HomePage() {
         </div>
 
         {/* Search Bar Container */}
-        <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 container-main w-full z-30 font-body">
-          <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-white/50 p-2 md:p-3">
+        <div className="relative md:absolute md:-bottom-24 md:left-1/2 md:-translate-x-1/2 container-main w-full z-30 font-body px-4 md:px-0 -mt-20 md:mt-0">
+          <div className="bg-white/80 backdrop-blur-2xl rounded-[2rem] md:rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-white/50 p-3 md:p-4">
             {/* 1. Tabs Menu - Thiết kế lại dạng Pill Tab */}
-            <div className="flex items-center gap-2 px-4 py-2 mb-2 overflow-x-auto no-scrollbar justify-start md:justify-center">
+            <div className="flex items-center gap-2 px-2 py-2 mb-2 overflow-x-auto no-scrollbar justify-start md:justify-center">
               {[
                 { icon: "local_activity", label: "Visa", active: false },
                 { icon: "grid_view", label: "Tour trọn gói", active: true },
@@ -43,7 +43,7 @@ export default function HomePage() {
               ].map((tab, idx) => (
                 <button
                   key={idx}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-4 md:px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap flex-none ${
                     tab.active
                       ? "bg-primary text-white shadow-md shadow-primary/20 scale-105"
                       : "text-gray-500 hover:bg-white/50 hover:text-primary"
@@ -58,11 +58,11 @@ export default function HomePage() {
             </div>
 
             {/* 2. Input Fields Area - Thiết kế dạng High-Tech Clean */}
-            <div className="bg-surface rounded-[2rem] p-2 flex flex-col md:flex-row items-center gap-2 shadow-inner border border-gray-50">
+            <div className="bg-surface rounded-3xl md:rounded-[2.5rem] p-2 flex flex-col md:flex-row items-center gap-2 shadow-inner border border-gray-50">
               {/* Search Groups */}
               <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-1 relative">
                 {/* Điểm đến */}
-                <div className="relative group px-7 py-4 rounded-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
+                <div className="relative group px-5 md:px-7 py-3 md:py-4 rounded-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">
                       location_on
@@ -73,11 +73,13 @@ export default function HomePage() {
                     />
                   </div>
                   {/* Subtle Vertical Divider */}
-                  <div className="hidden md:block absolute right-0 top-1/4 h-1/2 w-[1px] bg-gradient-to-b from-transparent via-gray-200 to-transparent"></div>
+                  <div className="hidden md:block absolute right-0 top-1/4 h-1/2 w-px bg-gradient-to-b from-transparent via-gray-200 to-transparent"></div>
+                  {/* Horizontal Divider for mobile */}
+                  <div className="block md:hidden absolute bottom-0 left-1/4 w-1/2 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
                 </div>
 
                 {/* Ngày đi */}
-                <div className="relative group px-7 py-4 rounded-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
+                <div className="relative group px-5 md:px-7 py-3 md:py-4 rounded-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">
                       calendar_month
@@ -88,10 +90,11 @@ export default function HomePage() {
                     />
                   </div>
                   <div className="hidden md:block absolute right-0 top-1/4 h-1/2 w-[1px] bg-gradient-to-b from-transparent via-gray-200 to-transparent"></div>
+                  <div className="block md:hidden absolute bottom-0 left-1/4 w-1/2 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
                 </div>
 
                 {/* Ngân sách */}
-                <div className="relative group px-7 py-4 rounded-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
+                <div className="relative group px-5 md:px-7 py-3 md:py-4 rounded-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">
                       payments
@@ -106,11 +109,12 @@ export default function HomePage() {
               </div>
 
               {/* Nút Tìm kiếm - Nút Tròn đặc biệt */}
-              <button className="w-full md:w-[76px] h-[76px] bg-primary text-white rounded-[1.5rem] flex items-center justify-center transition-all duration-500 hover:bg-primary-dark hover:rounded-[2rem] hover:shadow-2xl hover:shadow-primary/40 active:scale-90 group relative overflow-hidden">
+              <button className="w-full md:w-[76px] h-14 md:h-[76px] mt-2 md:mt-0 bg-primary text-white rounded-2xl md:rounded-[1.5rem] flex items-center justify-center transition-all duration-500 hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/40 active:scale-95 group relative overflow-hidden gap-2">
                 <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="material-symbols-outlined text-3xl z-10">
+                <span className="material-symbols-outlined text-2xl md:text-3xl z-10">
                   search
                 </span>
+                <span className="block md:hidden font-bold z-10">Tìm kiếm</span>
               </button>
             </div>
           </div>

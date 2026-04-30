@@ -62,7 +62,7 @@ export default CategoryCard;
 //     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
 //       {categories.map((cat, index) => (
 //         <CategoryCard
-//           key={index}    
+//           key={index}
 //           title={cat.title}
 //           image={cat.image}
 //           href={cat.href}
