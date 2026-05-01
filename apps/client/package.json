@@ -13,10 +13,12 @@
   "dependencies": {
     "@repo/ui": "*",
     "@tailwindcss/postcss": "^4.2.4",
+    "img-toolkit": "^2.1.1",
     "lucide-react": "^1.14.0",
     "next": "16.2.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
@@ -24,6 +26,7 @@
     "@types/node": "^22.15.3",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@types/sharp": "^0.31.1",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.39.1",
     "postcss": "^8.5.12",

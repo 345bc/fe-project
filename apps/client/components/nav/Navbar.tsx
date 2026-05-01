@@ -32,81 +32,85 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   return (
-    <nav
-      className={`fixed top-0 w-full z-[100] transition-all duration-500 ease-in-out ${
-        isScrolled
-          ? "bg-white/70 backdrop-blur-2xl shadow-[0_2px_20px_rgba(0,0,0,0.05)] py-3"
-          : "bg-transparent py-6"
-      }`}
-    >
-      <div className="flex justify-between items-center container-main mx-auto md:px-12">
-        {/* Logo */}
-        <Link
-          href="/"
-          className={`text-2xl font-black tracking-tighter transition-colors duration-300 ${
-            isScrolled ? "text-[#13357B]" : "text-white"
-          }`}
-        >
-          ZTRAVEL
-        </Link>
-
-        {/* Menu Links */}
-        <div
-          className={`hidden md:flex gap-10 font-medium text-sm uppercase tracking-widest transition-colors duration-300 ${
-            isScrolled ? "text-gray-700" : "text-white/90"
-          }`}
-        >
-          {["Destinations", "Tours", "Cruises", "Offers"].map((item) => (
-            <Link
-              key={item}
-              href={`/${item.toLowerCase()}`}
-              className="hover:text-blue-500 transition-colors relative group"
-            >
-              {item}
-              <span
-                className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full`}
-              ></span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Action Buttons & Mobile Menu */}
-        <div className="flex items-center gap-1 md:gap-3">
-          <button
-            className={`p-2 rounded-full hover:bg-black/5 transition-colors ${
-              isScrolled ? "text-gray-700" : "text-white"
-            }`}
-            aria-label="Search"
-          >
-            <span className="material-symbols-outlined text-[20px] md:text-[22px]">
-              search
-            </span>
-          </button>
-
+    <>
+      <nav
+        className={`fixed top-0 w-full z-[100] transition-all duration-500 ease-in-out ${
+          isScrolled
+            ? "bg-white/70 backdrop-blur-2xl shadow-[0_2px_20px_rgba(0,0,0,0.05)] py-3"
+            : "bg-transparent py-6"
+        }`}
+      >
+        <div className="flex justify-between items-center container-main mx-auto md:px-12">
+          {/* Logo */}
           <Link
-            href="/login"
-            className={`p-2 rounded-full hover:bg-black/5 transition-colors ${
-              isScrolled ? "text-gray-700" : "text-white"
+            href="/"
+            className={`text-2xl font-black tracking-tighter transition-colors duration-300 ${
+              isScrolled ? "text-[#13357B]" : "text-white"
             }`}
-            aria-label="User Profile"
           >
-            <span className="material-symbols-outlined text-[20px] md:text-[22px]">
-              person
-            </span>
+            ZTRAVEL
           </Link>
 
-          {/* Hamburger Menu (Mobile Only) */}
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className={`md:hidden p-2 ml-1 rounded-full hover:bg-black/5 transition-colors ${
-              isScrolled ? "text-gray-700" : "text-white"
+          {/* Menu Links */}
+          <div
+            className={`hidden md:flex gap-10 font-medium text-sm uppercase tracking-widest transition-colors duration-300 ${
+              isScrolled ? "text-gray-700" : "text-white/90"
             }`}
-            aria-label="Open Menu"
           >
-            <span className="material-symbols-outlined text-[24px]">menu</span>
-          </button>
+            {["Destinations", "Tours", "Cruises", "Offers"].map((item) => (
+              <Link
+                key={item}
+                href={`/${item.toLowerCase()}`}
+                className="hover:text-blue-500 transition-colors relative group"
+              >
+                {item}
+                <span
+                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full`}
+                ></span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Action Buttons & Mobile Menu */}
+          <div className="flex items-center gap-1 md:gap-3">
+            <button
+              className={`p-2 rounded-full hover:bg-black/5 transition-colors ${
+                isScrolled ? "text-gray-700" : "text-white"
+              }`}
+              aria-label="Search"
+            >
+              <span className="material-symbols-outlined text-[20px] md:text-[22px]">
+                search
+              </span>
+            </button>
+
+            <Link
+              href="/login"
+              className={`p-2 rounded-full hover:bg-black/5 transition-colors ${
+                isScrolled ? "text-gray-700" : "text-white"
+              }`}
+              aria-label="User Profile"
+            >
+              <span className="material-symbols-outlined text-[20px] md:text-[22px]">
+                person
+              </span>
+            </Link>
+
+            {/* Hamburger Menu (Mobile Only) */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className={`md:hidden p-2 ml-1 rounded-full hover:bg-black/5 transition-colors ${
+                isScrolled ? "text-gray-700" : "text-white"
+              }`}
+              aria-label="Open Menu"
+            >
+              <span className="material-symbols-outlined text-[24px]">
+                menu
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
+      </nav>
 
       {/* Mobile Menu Overlay */}
       <div
@@ -156,6 +160,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 }

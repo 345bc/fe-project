@@ -24,7 +24,7 @@ const CategoryCard = ({ image, title, href }: CategoryCardProps) => (
     />
 
     {/* Overlay Layer: Đậm dần về phía đáy để làm nổi bật văn bản trắng */}
-    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+    <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
 
     {/* Content Layer */}
     <div className="absolute inset-x-0 bottom-0 p-6 md:p-10 flex justify-center">

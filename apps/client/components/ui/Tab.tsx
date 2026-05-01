@@ -23,10 +23,10 @@ export default function Tabs() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`relative px-1 pb-3 md:pb-4 text-[14px] md:text-[15px] font-bold transition-all duration-300 whitespace-nowrap flex-shrink-0
+            className={`relative px-1 pb-3 md:pb-4 text-[14px] md:text-[15px] font-bold transition-all duration-300 whitespace-nowrap shrink-0
                   ${
                     activeTab === tab
-                      ? "text-primary translate-y-[-1px]"
+                      ? "text-primary translate-y-px"
                       : "text-gray-500 hover:text-primary/70"
                   }
                 `}

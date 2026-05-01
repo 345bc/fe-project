@@ -25,6 +25,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "img-toolkit": "^2.1.1",
     "swiper": "^12.1.4"
   }
 }

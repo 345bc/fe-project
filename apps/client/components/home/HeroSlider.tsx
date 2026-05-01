@@ -28,7 +28,7 @@ const imagesilder = [
 
 export default function HeroSlider({ images = imagesilder }: SliderProps) {
   return (
-    <div className="container-wide px-6 mt-12 md:mt-16 h-[300px] md:h-[400px] bg-gray-100 rounded-[2rem] overflow-hidden shadow-2xl">
+    <div className="container-wide px-6 mt-12 md:mt-16 h-[300px] md:h-[400px] bg-gray-100 rounded-4xl overflow-hidden shadow-2xl">
       <Swiper
         grabCursor={true}
         effect={"creative"}
