@@ -34,7 +34,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-[100] transition-all duration-500 ease-in-out ${
+        className={`fixed top-0 w-full z-\[100\] transition-all duration-500 ease-in-out ${
           isScrolled
             ? "bg-white/70 backdrop-blur-2xl shadow-[0_2px_20px_rgba(0,0,0,0.05)] py-3"
             : "bg-transparent py-6"
@@ -85,7 +85,7 @@ export default function Navbar() {
             </button>
 
             <Link
-              href="/login"
+              href="/signin"
               className={`p-2 rounded-full hover:bg-black/5 transition-colors ${
                 isScrolled ? "text-gray-700" : "text-white"
               }`}
@@ -114,7 +114,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-white z-[110] transition-transform duration-500 ease-in-out md:hidden flex flex-col ${
+        className={`fixed inset-0 bg-white z-\[110\] transition-transform duration-500 ease-in-out md:hidden flex flex-col ${
           isMobileMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >

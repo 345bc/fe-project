@@ -20,7 +20,7 @@ const CategoryCard = ({ image, title, href }: CategoryCardProps) => (
       alt={title}
       fill
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      className="object-cover transition-transform duration-1000 group-hover:scale-110"
+      className="object-cover transition-transform duration-1000 group-hover:scale-105"
     />
 
     {/* Overlay Layer: Đậm dần về phía đáy để làm nổi bật văn bản trắng */}

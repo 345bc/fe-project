@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import AuthInput from "@/components/ui/AuthInput";
 
-export default function LoginPage() {
+export default function SigninPage() {
   return (
     <main className="flex min-h-screen bg-surface">
       <section className="relative hidden w-1/2 lg:block">
@@ -14,7 +14,7 @@ export default function LoginPage() {
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 z-10 bg-linear-to-t from-primary/80 via-transparent to-transparent" />
         <div className="relative z-20 flex h-full flex-col justify-between p-16 text-white">
           <span className="text-xl font-bold tracking-widest uppercase border-b-2 border-white/30 w-fit pb-1">
             ZTravel

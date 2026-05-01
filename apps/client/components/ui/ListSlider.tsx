@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useRef, useState, useEffect } from "react";
 
 interface ListSliderProps {
@@ -64,7 +64,7 @@ const ListSlider = ({ children }: ListSliderProps) => {
 
       <div
         ref={scrollRef}
-        className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar snap-x-mandatory scroll-smooth pb-8 pt-4 -mt-4"
+        className="flex gap-4 md:gap-6 flex-nowrap overflow-x-auto no-scrollbar snap-x-mandatory scroll-smooth pb-8 pt-4 -mt-4"
       >
         {React.Children.map(children, (child) => (
           /* Use flex-none and specific widths to prevent Flexbox layout shifts. 

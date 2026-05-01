@@ -25,14 +25,14 @@ const TourCard = ({
 }: TourCardProps) => {
   return (
     /* .packages-item & .package-card */
-    <div className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border-0">
+    <div className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-transform duration-300 border-0">
       {/* .package-img-wrapper */}
       <div className="relative h-[230px] w-full overflow-hidden">
         <Image
           src={image}
           alt={title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
         {/* .category-badge */}
         <div className="absolute top-[15px] left-[15px] bg-white/90 backdrop-blur-sm text-[#13357B] px-3 py-1.5 rounded-full text-[0.8rem] font-bold uppercase z-10 shadow-sm flex items-center gap-1">
@@ -73,14 +73,9 @@ const TourCard = ({
 
         {/* Footer (Giá + Nút) */}
         <div className="flex items-center justify-between mt-4">
-          <div>
-            <small className="text-gray-400 block text-[0.8rem]">
-              Giá chỉ từ
-            </small>
-            <span className="text-[#13357B] text-[1.4rem] font-extrabold">
-              {price} đ
-            </span>
-          </div>
+          <span className="text-[#13357B] text-[1.4rem] font-extrabold">
+            {price} đ
+          </span>
           <Link
             href={`/tour/${id}`}
             className="bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-sm hover:bg-surface hover:shadow-md hover:text-surface-dark border border-transparent hover:border-primary transition-all active:scale-95"
@@ -94,3 +89,4 @@ const TourCard = ({
 };
 
 export default TourCard;
+
