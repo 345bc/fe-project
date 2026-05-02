@@ -26,7 +26,7 @@ const authService = {
   // Sign In
   async signIn(credentials) {
     try {
-      const response = await axios.post(`${API_URL}/auth/signin`, {
+      const response = await tokenBearer.post("/auth/signin", {
         username: credentials.username,
         password: credentials.password
       });
@@ -35,12 +35,7 @@ const authService = {
 
       if (springData && springData.token) {
       localStorage.setItem('token', springData.token);
-      
-      tokenBearer.defaults.headers.common['Authorization'] = `Bearer ${springData.token}`;
-      
-      console.log('✅ Login successful, token saved');
       }
-
       
       return {
         success: true,
