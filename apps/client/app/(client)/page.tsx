@@ -29,7 +29,7 @@ export default function HomePage() {
 
         {/* Search Bar Container */}
         <div className="relative md:absolute md:-bottom-24 md:left-1/2 md:-translate-x-1/2 container-main w-full z-30 font-body px-4 md:px-0 -mt-20 md:mt-0">
-          <div className="bg-white/80 backdrop-blur-2xl rounded-4xl md:rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-white/50 p-3 md:p-4">
+          <div className="bg-surface/80 backdrop-blur-2xl rounded-4xl md:rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-white/50 p-3 md:p-4">
             {/* 1. Tabs Menu - Thiết kế lại dạng Pill Tab */}
             <div className="flex items-center gap-2 px-2 py-2 mb-2 overflow-x-auto no-scrollbar justify-start md:justify-center">
               {[
@@ -45,7 +45,7 @@ export default function HomePage() {
                   className={`flex items-center gap-2 px-4 md:px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap flex-none ${
                     tab.active
                       ? "bg-primary text-white shadow-md shadow-primary/20 scale-105"
-                      : "text-gray-500 hover:bg-white/50 hover:text-primary"
+                      : "text-gray-500 hover:bg-surface/50 hover:text-primary"
                   }`}
                 >
                   <span className="material-symbols-outlined text-[18px]">
@@ -108,7 +108,7 @@ export default function HomePage() {
 
               {/* Nút Tìm kiếm - Nút Tròn đặc biệt */}
               <button className="w-full md:w-[76px] h-14 md:h-[76px] mt-2 md:mt-0 bg-primary text-white rounded-2xl md:rounded-3xl flex items-center justify-center transition-all duration-500 hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/40 active:scale-95 group relative overflow-hidden gap-2">
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-surface/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span className="material-symbols-outlined text-2xl md:text-3xl z-10">
                   search
                 </span>

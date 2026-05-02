@@ -2,11 +2,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import AuthInput from "@/components/ui/AuthInput";
-import authService from "@/services/authService";
+import authService from "@/services/auth-service";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function SignupPage() {
+export default function SignUpPage() {
   const router = useRouter();
   const [error, seterror] = useState("");
   const [success, setsuccess] = useState("");
@@ -45,7 +45,7 @@ export default function SignupPage() {
     if (result.success) {
       setsuccess("Sign-up successful! Redirecting to login...");
       setTimeout(() => {
-        router.push("/signin");
+        router.push("/sign-in");
       }, 2000);
     } else {
       seterror(result.message);
@@ -81,20 +81,24 @@ export default function SignupPage() {
       </section>
 
       {/* Form */}
-      <section className="relative flex w-full lg:w-1/2 justify-center   lg:mt-0">
-        <div className="absolute z-50 top-4 right-0 px-5">
+      <section className="relative flex w-full lg:w-1/2 justify-center p-4 sm:p-6 md:p-8 lg:p-12  lg:mt-0">
+        <div className=" absolute z-50 top-4 right-0 px-5">
           {error && (
-            <div className="text-red-500 animate-slide-right-to-left  bg-brand-300">
-              {error}
+            <div className="overflow-hidden max-w-72  whitespace-pre-line  rounded-lg border border-primary  p-3 ">
+              <p className="animate-slide-right-to-left inline-block  text-sm font-medium uppercase tracking-wider text-red-600">
+                {error}
+              </p>
             </div>
           )}
           {success && (
-            <div className="text-green-500 animate-slide-right-to-left bg-brand-300">
-              {success}
+            <div className="overflow-hidden max-w-72 whitespace-pre-line rounded-lg border border-primary  p-3 ">
+              <p className="animate-slide-right-to-left inline-block text-sm font-medium uppercase tracking-wider text-green-500">
+                {success}
+              </p>
             </div>
           )}
         </div>
-        <div className="w-full max-w-sm md:max-w-md h-full mx-auto pt-4 flex flex-col justify-start">
+        <div className="w-full max-w-sm md:max-w-md h-full mx-auto  flex flex-col justify-start">
           <header className="mb-4 text-center lg:text-left">
             <h2 className="text-4xl font-black text-primary  tracking-tight">
               Tạo tài khoản
@@ -157,7 +161,7 @@ export default function SignupPage() {
           <p className="text-center text-sm text-slate-500 font-medium italic mt-auto pt-10 pb-8">
             Đã có tài khoản?{" "}
             <Link
-              href="/login"
+              href="/sign-in"
               className="font-black text-slate-900 ml-1 hover:text-primary not-italic border-b border-slate-900/10"
             >
               Đăng nhập

@@ -1,7 +1,9 @@
 /* app/globals.css */
 @import "tailwindcss";
 
-/* Animation */
+/* ==================== CUSTOM ANIMATIONS ==================== */
+
+/* Slide from right to left */
 @keyframes slideRightToLeft {
   from {
     transform: translateX(100%);
@@ -13,6 +15,7 @@
   }
 }
 
+/* Slide from left to right */
 @keyframes slideLeftToRight {
   from {
     transform: translateX(-100%);
@@ -24,6 +27,7 @@
   }
 }
 
+/* Fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -33,6 +37,7 @@
   }
 }
 
+/* Bounce animation */
 @keyframes bounce {
   0%,
   100% {
@@ -42,22 +47,31 @@
     transform: translateY(-10px);
   }
 }
-@media (max-width: 768px) {
-  .animate-slide-right-to-left {
-    animation: slideRightToLeft 0.2s ease-out;
+
+/* Slide out animation (for auto-hiding messages) */
+@keyframes slideOut {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }
 
-/* Desktop */
+/* ==================== ANIMATION UTILITY CLASSES ==================== */
+
+/* Mobile styles (default) */
+.animate-slide-right-to-left {
+  animation: slideRightToLeft 0.2s ease-out;
+}
+
+/* Desktop styles */
 @media (min-width: 769px) {
   .animate-slide-right-to-left {
     animation: slideRightToLeft 0.4s ease-out;
   }
-}
-
-/* Tạo utility classes */
-.animate-slide-right-to-left {
-  animation: slideRightToLeft 0.3s ease-out;
 }
 
 .animate-slide-left-to-right {
@@ -72,28 +86,19 @@
   animation: bounce 0.5s ease-in-out;
 }
 
-/* Thêm delay cho animation */
+/* Delayed animation */
 .animate-slide-right-to-left-delay {
   animation: slideRightToLeft 0.3s ease-out 0.1s both;
 }
 
-/* Animation cho message tự biến mất */
-@keyframes slideOut {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
+/* Slide out animation */
 .animate-slide-out {
   animation: slideOut 0.3s ease-in forwards;
 }
+
+/* ==================== CUSTOM THEME VARIABLES ==================== */
 @theme {
-  /* Brand colors  */
+  /* Brand colors */
   --color-brand-50: #eff6ff;
   --color-brand-100: #dbeafe;
   --color-brand-200: #bfdbfe;
@@ -104,11 +109,11 @@
   --color-brand-700: #1d4ed8;
   --color-brand-800: #1e40af;
   --color-brand-900: #1e3a8a;
-  /* Primary */
-  --color-primary: #12357a;
-  /* --color-primary-dark: #0d2a63; */
 
-  /* Red (Price & Badge) - Thêm để làm TourCard */
+  /* Primary color */
+  --color-primary: #12357a;
+
+  /* Red (Price & Badge) */
   --color-red-500: #ef4444;
   --color-red-600: #dc2626;
   --color-red-700: #b91c1c;
@@ -119,92 +124,61 @@
   --color-green-600: #16a34a;
   --color-green-700: #15803d;
 
-  /* Surface */
+  /* Surface colors */
   --color-surface: #ffffff;
   --color-surface-dark: #0f172a;
   --color-surface-container-low: #f8fafc;
   --color-surface-container-high: #f1f5f9;
 
-  /* Text */
+  /* Text colors */
   --color-text-primary: #111827;
   --color-text-secondary: #6b7280;
 
   /* Background */
   --color-light: #f2f2f2;
 
-  /* Container */
+  /* Container max width */
   --container-7xl: 1440px;
 
-  /* Typography - Đã cập nhật: Heading = Poppins, Body = Inter */
+  /* Typography */
   --font-headline: "Poppins", sans-serif;
   --font-body: "Inter", sans-serif;
 
-  /* Shadows - Thêm để SearchBar và Card đẹp hơn */
+  /* Shadows */
   --shadow-tour: 0 8px 30px rgba(0, 0, 0, 0.04);
   --shadow-tour-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-/* Các Utility Class bổ trợ (Layer base/utilities) */
-@layer base {
-  body {
-    @apply font-body text-text-primary bg-white;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-headline;
-  }
-}
-
-@layer utilities {
-  /* Ẩn scrollbar nhưng vẫn scroll được */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* Clamp text cho Card */
-  .text-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .text-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* --- CẬP NHẬT MỚI: Hỗ trợ Slider/Carousel --- */
-  .snap-x-mandatory {
-    scroll-snap-type: x mandatory;
-  }
-  .snap-center {
-    scroll-snap-align: center;
-  }
-  .snap-start {
-    scroll-snap-align: start;
-  }
-}
-/* apps/client/app/globals.css */
-
-/* ==================== WRAPPER CLASSES ==================== */
+/* ==================== OVERLAY COMPONENTS ==================== */
 @layer components {
+  /* Dark overlay with hover effect */
+  .overlay-dark {
+    @apply absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors;
+  }
+
+  /* Gradient overlay (dark to transparent) */
+  .overlay-gradient {
+    @apply absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent;
+  }
+
+  /* Blur overlay (glassmorphism) */
+  .overlay-blur {
+    @apply absolute inset-0 bg-black/20 backdrop-blur-sm group-hover:bg-black/10 transition-all;
+  }
+
+  /* Light overlay with hover effect */
+  .overlay-light {
+    @apply absolute inset-0 bg-white/30 group-hover:bg-white/20 transition-colors;
+  }
+
+  /* Section wrapper with surface background */
   .wrapper-surface {
     background-color: var(--color-surface);
     padding-top: 2rem;
     padding-bottom: 10rem;
   }
 
+  /* Section wrapper with low surface background */
   .wrapper-surface-low {
     background-color: var(--color-surface-container-low);
     padding-top: 2rem;
@@ -212,9 +186,9 @@
   }
 }
 
-/* ==================== CONTAINER CLASSES ==================== */
+/* ==================== CONTAINER COMPONENTS ==================== */
 @layer components {
-  /* Container rộng hơn (tối đa 1280px, cho nhiều nội dung) */
+  /* Wide container (max-width: 1280px) */
   .container-wide {
     max-width: 1280px;
     margin-left: auto;
@@ -223,7 +197,7 @@
     padding-right: 1rem;
   }
 
-  /* Container rất rộng (tối đa 1440px, dùng --container-7xl) */
+  /* Main container (max-width: 1440px) */
   .container-main {
     max-width: var(--container-7xl);
     margin-left: auto;
@@ -232,7 +206,7 @@
     padding-right: 1rem;
   }
 
-  /* Container hẹp (tối đa 768px, cho blog, article) */
+  /* Narrow container (max-width: 768px) - for blogs, articles */
   .container-narrow {
     max-width: 768px;
     margin-left: auto;
@@ -241,27 +215,27 @@
     padding-right: 1rem;
   }
 
-  /* Container full width (không giới hạn, vẫn có padding) */
+  /* Full width container with padding */
   .container-fluid {
     width: 100%;
     padding-left: 1rem;
     padding-right: 1rem;
   }
 
-  /* Container không padding (dùng khi muốn tự xử lý padding) */
+  /* Container without padding (custom padding handling) */
   .container-no-padding {
     max-width: 1024px;
     margin-left: auto;
     margin-right: auto;
   }
 
-  /* --- CẬP NHẬT MỚI: Nút điều hướng Slider --- */
+  /* Slider navigation button */
   .btn-nav-slider {
-    @apply w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 border border-gray-200 bg-white hover:bg-primary hover:text-white hover:border-primary shadow-sm disabled:opacity-30 disabled:cursor-not-allowed;
+    @apply w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 border border-gray-200 bg-surface hover:bg-primary hover:text-white hover:border-primary shadow-sm disabled:opacity-30 disabled:cursor-not-allowed;
   }
 }
 
-/* Responsive padding cho các container */
+/* Responsive container padding */
 @media (min-width: 640px) {
   .container-wide,
   .container-main,
@@ -279,5 +253,64 @@
   .container-fluid {
     padding-left: 2rem;
     padding-right: 2rem;
+  }
+}
+
+/* ==================== BASE LAYOUT STYLES ==================== */
+@layer base {
+  body {
+    @apply font-body text-text-primary bg-surface;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-headline;
+  }
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+@layer utilities {
+  /* Hide scrollbar but keep scroll functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Text clamping (2 lines) */
+  .text-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Text clamping (3 lines) */
+  .text-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Horizontal scroll snap */
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+
+  /* Center snap alignment */
+  .snap-center {
+    scroll-snap-align: center;
+  }
+
+  /* Start snap alignment */
+  .snap-start {
+    scroll-snap-align: start;
   }
 }

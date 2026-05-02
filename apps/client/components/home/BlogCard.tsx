@@ -36,7 +36,7 @@ const BlogCard = ({
         <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-90 z-10" />
 
         {/* Badge ngày tháng góc phải trên */}
-        <div className="absolute top-[15px] right-[15px] bg-white/95 text-gray-800 px-2.5 py-1 rounded-md text-[0.75rem] font-bold z-20 shadow-sm">
+        <div className="absolute top-[15px] right-[15px] bg-surface/95 text-gray-800 px-2.5 py-1 rounded-md text-[0.75rem] font-bold z-20 shadow-sm">
           {date}
         </div>
 

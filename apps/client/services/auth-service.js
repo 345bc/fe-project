@@ -1,4 +1,5 @@
 import axios from 'axios';
+import tokenBearer from '@/lib/bearer-token'
 
 const API_URL = 'http://localhost:8080';
 const authService = {
@@ -22,19 +23,24 @@ const authService = {
     }
   },
 
-  // Đăng nhập (sẽ làm sau)
-  async login(credentials) {
+  // Sign In
+  async signIn(credentials) {
     try {
-      const response = await axios.post(`${API_URL}/login`, {
+      const response = await axios.post(`${API_URL}/auth/signin`, {
         username: credentials.username,
         password: credentials.password
       });
       
-      if (response.data.token) {
-        // Lưu token vào localStorage
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+      const springData = response.data.data; 
+
+      if (springData && springData.token) {
+      localStorage.setItem('token', springData.token);
+      
+      tokenBearer.defaults.headers.common['Authorization'] = `Bearer ${springData.token}`;
+      
+      console.log('✅ Login successful, token saved');
       }
+
       
       return {
         success: true,
@@ -43,7 +49,7 @@ const authService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.message || 'Sign-in failed'
       };
     }
   },

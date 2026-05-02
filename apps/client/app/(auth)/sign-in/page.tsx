@@ -2,8 +2,45 @@
 import Image from "next/image";
 import Link from "next/link";
 import AuthInput from "@/components/ui/AuthInput";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import authService from "@/services/auth-service";
 
-export default function SigninPage() {
+export default function SignInPage() {
+  const router = useRouter();
+  const [error, seterror] = useState("");
+  const [success, setsuccess] = useState("");
+  const [loading, setloading] = useState(false);
+
+  const HandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    seterror("");
+    setsuccess("");
+    setloading(true);
+
+    const formdata = new FormData(e.currentTarget);
+    const username = formdata.get("username");
+    const password = formdata.get("password");
+
+    // Call Api
+    const result = await authService.signIn({
+      username: username,
+      password: password,
+    });
+
+    setloading(false);
+
+    if (result.success) {
+      setsuccess("Sign-in successful! Redirecting to Home");
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    } else {
+      seterror(result.message);
+      setTimeout(() => seterror(""), 5000);
+    }
+  };
   return (
     <main className="flex min-h-screen bg-surface">
       <section className="relative hidden w-1/2 lg:block">
@@ -32,21 +69,39 @@ export default function SigninPage() {
       </section>
 
       {/* CỘT PHẢI: FORM */}
-      <section className="flex w-full lg:w-1/2 justify-center p-8 md:p-16 lg:p-24 mt-10 lg:mt-0">
+      <section className="relative flex w-full lg:w-1/2 justify-center p-8 md:p-16  mt-10 lg:mt-0">
         <div className="w-full max-w-sm md:max-w-md h-full mx-auto flex flex-col justify-start">
+          <div className=" absolute z-50 top-4 right-0 px-5">
+            {error && (
+              <div className="overflow-hidden max-w-72  whitespace-pre-line  rounded-lg border border-primary  p-3 ">
+                <p className="animate-slide-right-to-left inline-block  text-sm font-medium uppercase tracking-wider text-red-600">
+                  {error}
+                </p>
+              </div>
+            )}
+            {success && (
+              <div className="overflow-hidden max-w-72 whitespace-pre-line rounded-lg border border-primary  p-3 ">
+                <p className="animate-slide-right-to-left inline-block text-sm font-medium uppercase tracking-wider text-green-500">
+                  {success}
+                </p>
+              </div>
+            )}
+          </div>
           <header className="mb-10 text-center lg:text-left">
             <h2 className="text-4xl font-black text-primary py-4 tracking-tight">
               Đăng nhập
             </h2>
           </header>
 
-          <form className="space-y-5 mt-auto">
+          <form onSubmit={HandleSubmit} className="space-y-5 mt-auto">
             <AuthInput
-              label="Địa chỉ Email"
-              type="email"
-              placeholder="vi-du@email.com"
+              name="username"
+              label="Tên đăng nhập"
+              type="text"
+              placeholder="345bc"
             />
             <AuthInput
+              name="password"
               label="Mật khẩu"
               type="password"
               placeholder="••••••••"
@@ -68,7 +123,7 @@ export default function SigninPage() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-100"></div>
             </div>
-            <span className="relative bg-white px-4 text-[10px] font-black italic text-slate-300 uppercase tracking-widest">
+            <span className="relative bg-surface px-4 text-[10px] font-black italic text-slate-300 uppercase tracking-widest">
               Hoặc
             </span>
           </div>
@@ -82,7 +137,7 @@ export default function SigninPage() {
           <p className="text-center text-sm text-slate-500 font-medium italic mt-auto pt-12 pb-8">
             Chưa có tài khoản?{" "}
             <Link
-              href="/signup"
+              href="/sign-up"
               className="font-black text-slate-900 ml-1 hover:text-primary not-italic border-b border-slate-900/10"
             >
               Đăng ký

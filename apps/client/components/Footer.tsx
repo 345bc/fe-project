@@ -148,13 +148,13 @@ export default function Footer() {
           </div>
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <div className="flex gap-3 grayscale opacity-40 hover:grayscale-0 transition-all">
-              <div className="px-2 py-1 bg-white border border-slate-200 rounded text-[8px]">
+              <div className="px-2 py-1 bg-surface border border-slate-200 rounded text-[8px]">
                 VISA
               </div>
-              <div className="px-2 py-1 bg-white border border-slate-200 rounded text-[8px]">
+              <div className="px-2 py-1 bg-surface border border-slate-200 rounded text-[8px]">
                 MASTER
               </div>
-              <div className="px-2 py-1 bg-white border border-slate-200 rounded text-[8px]">
+              <div className="px-2 py-1 bg-surface border border-slate-200 rounded text-[8px]">
                 MOMO
               </div>
             </div>

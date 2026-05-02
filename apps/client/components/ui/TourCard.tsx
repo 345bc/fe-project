@@ -25,17 +25,11 @@ const TourCard = ({
 }: TourCardProps) => {
   return (
     /* .packages-item & .package-card */
-    <div className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-transform duration-300 border-0">
-      {/* .package-img-wrapper */}
+    <div className="group flex flex-col h-full hover:scale-105 bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-transform duration-300 border-0">
       <div className="relative h-[230px] w-full overflow-hidden">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
+        <Image src={image} alt={title} fill />
         {/* .category-badge */}
-        <div className="absolute top-[15px] left-[15px] bg-white/90 backdrop-blur-sm text-[#13357B] px-3 py-1.5 rounded-full text-[0.8rem] font-bold uppercase z-10 shadow-sm flex items-center gap-1">
+        <div className="absolute top-[15px] left-[15px] bg-surface/90 backdrop-blur-sm text-[#13357B] px-3 py-1.5 rounded-full text-[0.8rem] font-bold uppercase z-10 shadow-sm flex items-center gap-1">
           <span className="material-symbols-outlined text-[14px]">sell</span>
           {category}
         </div>
@@ -71,7 +65,6 @@ const TourCard = ({
 
         <hr className="opacity-10 mt-auto" />
 
-        {/* Footer (Giá + Nút) */}
         <div className="flex items-center justify-between mt-4">
           <span className="text-[#13357B] text-[1.4rem] font-extrabold">
             {price} đ
@@ -89,4 +82,3 @@ const TourCard = ({
 };
 
 export default TourCard;
-

@@ -48,7 +48,7 @@ export default function RootLayout({
             </nav>
           </aside>
           <div className="flex-1 flex flex-col">
-            <header className="bg-white shadow-sm p-4 flex justify-between items-center">
+            <header className="bg-surface shadow-sm p-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold">Trang quản trị</h2>
               <button className="text-red-600">Đăng xuất</button>
             </header>

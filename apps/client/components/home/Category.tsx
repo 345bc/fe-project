@@ -12,7 +12,7 @@ interface CategoryCardProps {
 const CategoryCard = ({ image, title, href }: CategoryCardProps) => (
   <Link
     href={href}
-    className="group relative block w-full h-[280px] md:h-[320px] overflow-hidden rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-500 transform-gpu"
+    className="group relative block hover:scale-105 w-full h-[280px] md:h-[320px] overflow-hidden rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-500 transform-gpu"
   >
     {/* Image Layer */}
     <Image
@@ -20,7 +20,6 @@ const CategoryCard = ({ image, title, href }: CategoryCardProps) => (
       alt={title}
       fill
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      className="object-cover transition-transform duration-1000 group-hover:scale-105"
     />
 
     {/* Overlay Layer: Đậm dần về phía đáy để làm nổi bật văn bản trắng */}

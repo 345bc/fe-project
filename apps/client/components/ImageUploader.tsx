@@ -95,7 +95,7 @@ export default function ImageUploader() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Ảnh gốc */}
         {originalPreview && (
-          <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
+          <div className="border rounded-lg overflow-hidden bg-surface shadow-sm">
             <div className="bg-gray-100 p-3 text-sm font-medium border-b">
               📷 Ảnh gốc
             </div>
@@ -121,7 +121,7 @@ export default function ImageUploader() {
 
         {/* Ảnh đã xử lý */}
         {optimizedUrl && (
-          <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
+          <div className="border rounded-lg overflow-hidden bg-surface shadow-sm">
             <div className="bg-green-50 p-3 text-sm font-medium border-b text-green-700">
               ✨ Ảnh đã tối ưu (800px WebP)
             </div>

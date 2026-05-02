@@ -27,7 +27,7 @@ const AuthInput = ({
       name={name}
       type={type}
       placeholder={placeholder}
-      className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+      className="w-full rounded-full border border-slate-300 bg-surface px-5 py-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
     />
   </div>
 );
