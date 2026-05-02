@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import AuthInput from "@/components/ui/AuthInput";
 import authService from "@/services/authService";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignupPage() {
-  // const route = useRouter();
+  const router = useRouter();
   const [error, seterror] = useState("");
   const [success, setsuccess] = useState("");
   const [loading, setloading] = useState(false);
@@ -45,7 +45,7 @@ export default function SignupPage() {
     if (result.success) {
       setsuccess("Sign-up successful! Redirecting to login...");
       setTimeout(() => {
-        router.push("/login");
+        router.push("/signin");
       }, 2000);
     } else {
       seterror(result.message);
@@ -104,7 +104,7 @@ export default function SignupPage() {
           <form onSubmit={HandleSubmit} className="my-auto space-y-2">
             <AuthInput
               name="username"
-              label="Họ và Tên"
+              label="Tên đăng nhập"
               type="text"
               placeholder="Nguyễn Văn A"
             />
