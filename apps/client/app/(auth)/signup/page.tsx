@@ -2,8 +2,57 @@
 import Image from "next/image";
 import Link from "next/link";
 import AuthInput from "@/components/ui/AuthInput";
+import authService from "@/services/authService";
+import router, { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function SignupPage() {
+  // const route = useRouter();
+  const [error, seterror] = useState("");
+  const [success, setsuccess] = useState("");
+  const [loading, setloading] = useState(false);
+
+  const HandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    seterror("");
+    setsuccess("");
+    setloading(true);
+
+    const formdata = new FormData(e.currentTarget);
+    const username = formdata.get("username");
+    const email = formdata.get("email");
+    const password = formdata.get("password");
+    const confirmPassword = formdata.get("confirmPassword");
+
+    // Check password
+    if (password !== confirmPassword) {
+      seterror("Passwords do not match");
+      setloading(false);
+      setTimeout(() => seterror(""), 3000);
+      return;
+    }
+
+    // Call Api
+    const result = await authService.signup({
+      name: username,
+      email,
+      password,
+    });
+
+    setloading(false);
+
+    if (result.success) {
+      setsuccess("Sign-up successful! Redirecting to login...");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } else {
+      seterror(result.message);
+      setTimeout(() => seterror(""), 5000);
+    }
+  };
+
   return (
     <main className="flex min-h-screen bg-surface">
       <section className="relative hidden w-1/2 lg:block">
@@ -14,7 +63,7 @@ export default function SignupPage() {
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 z-10 bg-linear-to-t from-primary/80 via-transparent to-transparent" />
         <div className="relative z-20 flex h-full flex-col justify-between p-16 text-white">
           <span className="text-xl font-bold tracking-widest uppercase border-b-2 border-white/30 w-fit pb-1">
             ZTravel
@@ -31,40 +80,51 @@ export default function SignupPage() {
         </div>
       </section>
 
-      {/* CỘT PHẢI: FORM */}
-      <section className="flex w-full lg:w-1/2 justify-center px-8 pt-4 md:p-16 lg:p-24  lg:mt-0">
-        <div className="w-full max-w-sm md:max-w-md h-full mx-auto flex flex-col justify-start">
-          <header className="mb-8 text-center lg:text-left">
+      {/* Form */}
+      <section className="relative flex w-full lg:w-1/2 justify-center   lg:mt-0">
+        <div className="absolute z-50 top-4 right-0 px-5">
+          {error && (
+            <div className="text-red-500 animate-slide-right-to-left  bg-brand-300">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="text-green-500 animate-slide-right-to-left bg-brand-300">
+              {success}
+            </div>
+          )}
+        </div>
+        <div className="w-full max-w-sm md:max-w-md h-full mx-auto pt-4 flex flex-col justify-start">
+          <header className="mb-4 text-center lg:text-left">
             <h2 className="text-4xl font-black text-primary  tracking-tight">
               Tạo tài khoản
             </h2>
           </header>
 
-          {/* Form Đăng ký */}
-          <form className="space-y-2">
-            {/* Họ và Tên */}
+          <form onSubmit={HandleSubmit} className="my-auto space-y-2">
             <AuthInput
+              name="username"
               label="Họ và Tên"
               type="text"
               placeholder="Nguyễn Văn A"
             />
 
-            {/* Email */}
             <AuthInput
+              name="email"
               label="Địa chỉ Email"
               type="email"
               placeholder="vi-du@email.com"
             />
 
-            {/* Mật khẩu */}
             <AuthInput
+              name="password"
               label="Mật khẩu"
               type="password"
               placeholder="Tối thiểu 8 ký tự"
             />
 
-            {/* Xác nhận mật khẩu */}
             <AuthInput
+              name="confirmPassword"
               label="Xác nhận mật khẩu"
               type="password"
               placeholder="••••••••"
@@ -78,11 +138,11 @@ export default function SignupPage() {
           </form>
 
           {/* Divider */}
-          <div className="relative py-8 text-center">
+          <div className="relative py-4 text-center">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-100"></div>
             </div>
-            <span className="relative bg-white px-4 text-[10px] font-black italic text-slate-300 uppercase tracking-widest">
+            <span className="relative px-4 text-[10px] font-black italic text-primary uppercase tracking-widest">
               Hoặc đăng ký bằng
             </span>
           </div>
@@ -94,7 +154,6 @@ export default function SignupPage() {
             ))}
           </div>
 
-          {/* Điều hướng quay lại Đăng nhập */}
           <p className="text-center text-sm text-slate-500 font-medium italic mt-auto pt-10 pb-8">
             Đã có tài khoản?{" "}
             <Link
