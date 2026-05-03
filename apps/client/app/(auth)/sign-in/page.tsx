@@ -7,7 +7,6 @@ import { useState } from "react";
 import authService from "@/services/auth-service";
 
 export default function SignInPage() {
-  const router = useRouter();
   const [error, seterror] = useState("");
   const [success, setsuccess] = useState("");
   const [loading, setloading] = useState(false);
@@ -34,11 +33,11 @@ export default function SignInPage() {
     if (result.success) {
       setsuccess("Sign-in successful! Redirecting to Home");
       setTimeout(() => {
-        router.push("/");
+        window.location.href = "/";
       }, 2000);
     } else {
       seterror(result.message);
-      setTimeout(() => seterror(""), 5000);
+      setTimeout(() => seterror(""), 3000);
     }
   };
   return (
@@ -69,18 +68,19 @@ export default function SignInPage() {
       </section>
 
       {/* CỘT PHẢI: FORM */}
+
       <section className="relative flex w-full lg:w-1/2 justify-center p-8 md:p-16  mt-10 lg:mt-0">
         <div className="w-full max-w-sm md:max-w-md h-full mx-auto flex flex-col justify-start">
           <div className=" absolute z-50 top-4 right-0 px-5">
             {error && (
-              <div className="overflow-hidden max-w-72  whitespace-pre-line  rounded-lg border border-primary  p-3 ">
+              <div className="overflow-hidden max-w-72 bg-surface  whitespace-pre-line z-50  rounded-lg border shadow-2xl border-primary  p-3 ">
                 <p className="animate-slide-right-to-left inline-block  text-sm font-medium uppercase tracking-wider text-red-600">
                   {error}
                 </p>
               </div>
             )}
             {success && (
-              <div className="overflow-hidden max-w-72 whitespace-pre-line rounded-lg border border-primary  p-3 ">
+              <div className="overflow-hidden max-w-72 whitespace-pre-line rounded-lg border border-primary shadow-2xl bg-surface  p-3 ">
                 <p className="animate-slide-right-to-left inline-block text-sm font-medium uppercase tracking-wider text-green-500">
                   {success}
                 </p>

@@ -2,24 +2,25 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import UserMenu from "./UserMenu";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
 
-    // Gọi ngay lập tức để đồng bộ với scroll position hiện tại
     handleScroll();
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Prevent scrolling when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -41,7 +42,6 @@ export default function Navbar() {
         }`}
       >
         <div className="flex justify-between items-center container-main mx-auto md:px-12">
-          {/* Logo */}
           <Link
             href="/"
             className={`text-2xl font-black tracking-tighter transition-colors duration-300 ${
@@ -57,7 +57,7 @@ export default function Navbar() {
               isScrolled ? "text-gray-700" : "text-white/90"
             }`}
           >
-            {["Destinations", "Tours", "Cruises", "Offers"].map((item) => (
+            {["Điểm đến", "Tours", "Cruises", "Offers"].map((item) => (
               <Link
                 key={item}
                 href={`/${item.toLowerCase()}`}
@@ -73,29 +73,8 @@ export default function Navbar() {
 
           {/* Action Buttons & Mobile Menu */}
           <div className="flex items-center gap-1 md:gap-3">
-            <button
-              className={`p-2 rounded-full hover:bg-black/5 transition-colors ${
-                isScrolled ? "text-gray-700" : "text-white"
-              }`}
-              aria-label="Search"
-            >
-              <span className="material-symbols-outlined text-[20px] md:text-[22px]">
-                search
-              </span>
-            </button>
-
-            <Link
-              href="/sign-in"
-              className={`p-2 rounded-full hover:bg-black/5 transition-colors ${
-                isScrolled ? "text-gray-700" : "text-white"
-              }`}
-              aria-label="User Profile"
-            >
-              <span className="material-symbols-outlined text-[20px] md:text-[22px]">
-                person
-              </span>
-            </Link>
-
+            {/* Person icon  */}
+            <UserMenu isScrolled={isScrolled} />
             {/* Hamburger Menu (Mobile Only) */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
@@ -114,7 +93,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-surface z-\[110\] transition-transform duration-500 ease-in-out md:hidden flex flex-col ${
+        className={`fixed inset-0 bg-surface z-100 transition-transform duration-500 ease-in-out md:hidden flex flex-col ${
           isMobileMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -149,15 +128,20 @@ export default function Navbar() {
               </span>
             </Link>
           ))}
-
-          <div className="mt-auto pt-10 border-t border-gray-100 flex flex-col gap-4">
-            <button className="w-full py-4 bg-primary text-white rounded-2xl font-bold text-lg hover:bg-primary-dark transition-colors">
-              Đăng nhập
-            </button>
-            <button className="w-full py-4 bg-blue-50 text-primary rounded-2xl font-bold text-lg hover:bg-blue-100 transition-colors">
-              Đăng ký
-            </button>
-          </div>
+          {!user && (
+            <div className="mt-auto pt-10 border-t border-gray-100 flex flex-col gap-4">
+              <Link href="/sign-in">
+                <button className="w-full py-4 bg-primary text-white rounded-2xl font-bold text-lg hover:bg-primary-dark transition-colors">
+                  Đăng nhập
+                </button>
+              </Link>
+              <Link href="/sign-up">
+                <button className="w-full py-4 bg-blue-50 text-primary rounded-2xl font-bold text-lg hover:bg-blue-100 transition-colors">
+                  Đăng ký
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </>

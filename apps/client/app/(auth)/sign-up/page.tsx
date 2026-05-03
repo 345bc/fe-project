@@ -84,14 +84,14 @@ export default function SignUpPage() {
       <section className="relative flex w-full lg:w-1/2 justify-center p-4 sm:p-6 md:p-8 lg:p-12  lg:mt-0">
         <div className=" absolute z-50 top-4 right-0 px-5">
           {error && (
-            <div className="overflow-hidden max-w-72  whitespace-pre-line  rounded-lg border border-primary  p-3 ">
+            <div className="overflow-hidden max-w-72 bg-surface z-50  whitespace-pre-line  rounded-lg border border-primary  p-3 ">
               <p className="animate-slide-right-to-left inline-block  text-sm font-medium uppercase tracking-wider text-red-600">
                 {error}
               </p>
             </div>
           )}
           {success && (
-            <div className="overflow-hidden max-w-72 whitespace-pre-line rounded-lg border border-primary  p-3 ">
+            <div className="overflow-hidden max-w-72 whitespace-pre-line z-50 bg-surface rounded-lg border border-primary  p-3 ">
               <p className="animate-slide-right-to-left inline-block text-sm font-medium uppercase tracking-wider text-green-500">
                 {success}
               </p>

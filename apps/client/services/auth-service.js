@@ -51,23 +51,9 @@ const authService = {
 
   // Logout
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+      localStorage.removeItem("token");
+  window.location.href = "/sign-in";
   },
-
-  // Lấy user hiện tại
-  getCurrentUser() {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      return JSON.parse(userStr);
-    }
-    return null;
-  },
-
-  // Kiểm tra đã login chưa
-  isAuthenticated() {
-    return localStorage.getItem('token') !== null;
-  }
 };
 
 export default authService;
