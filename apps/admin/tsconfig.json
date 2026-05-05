@@ -38,6 +38,6 @@
     "next-env.d.ts",
     "next.config.js",
     ".next/types/**/*.ts"
-, "hooks/useAuth.ts"  ],
+, "hooks/useAuth.ts", "services/user-service.js"  ],
   "exclude": ["node_modules"]
 }

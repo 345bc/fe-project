@@ -26,7 +26,7 @@ const authService = {
   // Sign In
   async signIn(credentials) {
     try {
-      const response = await tokenBearer.post("/auth/signin", {
+      const response = await tokenBearer.post("/auth/sign-in", {
         username: credentials.username,
         password: credentials.password
       });
