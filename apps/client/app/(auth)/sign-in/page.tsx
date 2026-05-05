@@ -73,14 +73,14 @@ export default function SignInPage() {
         <div className="w-full max-w-sm md:max-w-md h-full mx-auto flex flex-col justify-start">
           <div className=" absolute z-50 top-4 right-0 px-5">
             {error && (
-              <div className="overflow-hidden max-w-72 bg-surface  whitespace-pre-line z-50  rounded-lg border shadow-2xl border-primary  p-3 ">
+              <div className="overflow-hidden max-w-72 bg-ghostwhite  whitespace-pre-line z-50  rounded-lg border shadow-2xl border-primary  p-3 ">
                 <p className="animate-slide-right-to-left inline-block  text-sm font-medium uppercase tracking-wider text-red-600">
                   {error}
                 </p>
               </div>
             )}
             {success && (
-              <div className="overflow-hidden max-w-72 whitespace-pre-line rounded-lg border border-primary shadow-2xl bg-surface  p-3 ">
+              <div className="overflow-hidden max-w-72 whitespace-pre-line rounded-lg border border-primary shadow-2xl bg-ghostwhite  p-3 ">
                 <p className="animate-slide-right-to-left inline-block text-sm font-medium uppercase tracking-wider text-green-500">
                   {success}
                 </p>

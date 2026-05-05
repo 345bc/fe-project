@@ -59,14 +59,14 @@ const TourCard = ({
         </h5>
 
         {/* card-text & .text-clamp-3 */}
-        <p className="text-gray-500 mb-4 text-[0.95rem] leading-[1.6] line-clamp-3 min-h-[4.8em]">
+        <p className="text-gray-500 mb-4 trun text-[0.95rem] leading-[1.6] line-clamp-3 min-h-[4.8em]">
           {description}
         </p>
 
         <hr className="opacity-10 mt-auto" />
 
         <div className="flex items-center justify-between mt-4">
-          <span className="text-[#13357B] text-[1.4rem] font-extrabold">
+          <span className="text-[#13357B] text-[1.1rem] font-extrabold">
             {price} đ
           </span>
           <Link

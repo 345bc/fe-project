@@ -30,13 +30,13 @@ const authService = {
         username: credentials.username,
         password: credentials.password
       });
-
-      const springData = response.data.data;
+      
+      const springData = response.data.data; 
 
       if (springData && springData.token) {
-        localStorage.setItem('token', springData.token);
+      localStorage.setItem('token', springData.token);
       }
-
+      
       return {
         success: true,
         data: response.data
@@ -50,10 +50,12 @@ const authService = {
   },
 
   // Logout
-  logout() {
-    localStorage.removeItem("token");
-    window.location.href = "/sign-in";
-  },
+  
+logout() {
+  document.cookie = "access_token=; Max-Age=0; path=/";
+  window.location.href = "/sign-in";
+}
+
 };
 
 export default authService;
