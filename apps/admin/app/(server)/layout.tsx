@@ -62,6 +62,14 @@ export default function RootLayout({
                   Tours
                 </Link>
                 <Link
+                  href="/categories"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Danh mục Tour
+                </Link>
+                <Link
                   href="/destinations"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
                    hover:bg-gray-100 hover:text-gray-900
@@ -70,31 +78,15 @@ export default function RootLayout({
                   Điểm đến
                 </Link>
                 <Link
-                  href="/tours"
+                  href="/transports"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
                    hover:bg-gray-100 hover:text-gray-900
                    border-l-4 border-transparent hover:border-gray-300"
                 >
-                  Danh mục
+                  Phương tiện
                 </Link>
                 <Link
-                  href="/tours"
-                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
-                   hover:bg-gray-100 hover:text-gray-900
-                   border-l-4 border-transparent hover:border-gray-300"
-                >
-                  Bài viết
-                </Link>
-                <Link
-                  href="/tours"
-                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
-                   hover:bg-gray-100 hover:text-gray-900
-                   border-l-4 border-transparent hover:border-gray-300"
-                >
-                  Danh mục bài viết
-                </Link>
-                <Link
-                  href="/tours"
+                  href="/bookings"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
                    hover:bg-gray-100 hover:text-gray-900
                    border-l-4 border-transparent hover:border-gray-300"
@@ -102,7 +94,31 @@ export default function RootLayout({
                   Booking
                 </Link>
                 <Link
-                  href="/tours"
+                  href="/passengers"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Hành khách
+                </Link>
+                <Link
+                  href="/refunds"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Hoàn tiền
+                </Link>
+                <Link
+                  href="/reviews"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Đánh giá
+                </Link>
+                <Link
+                  href="/discounts"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
                    hover:bg-gray-100 hover:text-gray-900
                    border-l-4 border-transparent hover:border-gray-300"
@@ -110,20 +126,20 @@ export default function RootLayout({
                   Mã giảm giá
                 </Link>
                 <Link
-                  href="/tours"
+                  href="/blogs"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
                    hover:bg-gray-100 hover:text-gray-900
                    border-l-4 border-transparent hover:border-gray-300"
                 >
-                  Roles
+                  Bài viết
                 </Link>
                 <Link
-                  href="/tours"
+                  href="/blog-categories"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
                    hover:bg-gray-100 hover:text-gray-900
                    border-l-4 border-transparent hover:border-gray-300"
                 >
-                  Phương tiện
+                  Danh mục bài viết
                 </Link>
               </div>
             </nav>

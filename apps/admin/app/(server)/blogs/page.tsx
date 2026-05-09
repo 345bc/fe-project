@@ -1,0 +1,114 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import DeleteBlogButton from "@/components/DeleteBlogButton";
+
+const baseURL = "http://localhost:8080";
+
+export type Blog = {
+  id: number;
+  title: string;
+  author: string;
+  image: string;
+  views: number;
+  created_at: string;
+  blogCategories: { id: number; name: string } | null;
+};
+
+export default async function BlogsPage() {
+  let data = null;
+  let error = null;
+
+  try {
+    const cookieStore = cookies();
+    const token = (await cookieStore).get("access_token")?.value;
+
+    if (!token) redirect("/sign-in");
+
+    const res = await fetch(`${baseURL}/blogs`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+
+    if (res.status === 401) redirect("/sign-in");
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("RESPONSE:", text);
+      throw new Error("Failed to fetch blogs");
+    }
+
+    data = await res.json();
+  } catch (err: any) {
+    if (err?.digest?.startsWith("NEXT_REDIRECT")) throw err;
+    error = err instanceof Error ? err.message : "Không thể tải danh sách bài viết";
+  }
+
+  const blogs: Blog[] = data?.data || [];
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">Bài viết</h1>
+          <p className="mt-1 text-sm text-gray-500">Quản lý danh sách bài viết trong hệ thống</p>
+        </div>
+        <Link href="/blogs/add" className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors">Thêm bài viết</Link>
+      </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <p className="font-medium">Lỗi tải dữ liệu</p>
+          <p className="mt-1 text-red-600">{error}</p>
+        </div>
+      )}
+
+      {data && blogs.length === 0 && (
+        <div className="flex flex-col items-center py-16 text-center">
+          <p className="text-sm font-medium text-gray-900">Chưa có bài viết nào</p>
+          <p className="mt-1 text-sm text-gray-500">Bắt đầu bằng cách thêm bài viết đầu tiên.</p>
+          <Link href="/blogs/add" className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors">Thêm bài viết</Link>
+        </div>
+      )}
+
+      {data && blogs.length > 0 && (
+        <div className="overflow-hidden rounded-xl border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tiêu đề</th>
+                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tác giả</th>
+                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Danh mục</th>
+                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Lượt xem</th>
+                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 bg-white">
+              {blogs.map((blog: Blog) => (
+                <tr key={blog.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900 max-w-[200px] truncate">{blog.title}</td>
+                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">{blog.author}</td>
+                  <td className="whitespace-nowrap px-5 py-3.5">
+                    {blog.blogCategories ? (
+                      <span className="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">{blog.blogCategories.name}</span>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">{blog.views}</td>
+                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link href={`/blogs/update?id=${blog.id}`} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">Sửa</Link>
+                      <DeleteBlogButton blogId={blog.id} blogTitle={blog.title} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
