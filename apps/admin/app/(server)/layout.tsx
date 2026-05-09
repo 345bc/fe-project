@@ -54,34 +54,81 @@ export default function RootLayout({
                 </Link>
 
                 <Link
-                  href="/products"
+                  href="/tours"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
                    hover:bg-gray-100 hover:text-gray-900
                    border-l-4 border-transparent hover:border-gray-300"
                 >
-                  Products
+                  Tours
                 </Link>
-              </div>
-
-              <div className="mt-8">
-                <p className="mb-3 px-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Khác
-                </p>
-
                 <Link
-                  href="http://localhost:3000"
+                  href="/destinations"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
-                   hover:bg-gray-100 hover:text-gray-900"
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
                 >
-                  Về Website
+                  Điểm đến
+                </Link>
+                <Link
+                  href="/tours"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Danh mục
+                </Link>
+                <Link
+                  href="/tours"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Bài viết
+                </Link>
+                <Link
+                  href="/tours"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Danh mục bài viết
+                </Link>
+                <Link
+                  href="/tours"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Booking
+                </Link>
+                <Link
+                  href="/tours"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Mã giảm giá
+                </Link>
+                <Link
+                  href="/tours"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Roles
+                </Link>
+                <Link
+                  href="/tours"
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700
+                   hover:bg-gray-100 hover:text-gray-900
+                   border-l-4 border-transparent hover:border-gray-300"
+                >
+                  Phương tiện
                 </Link>
               </div>
             </nav>
 
             {/* Footer sidebar */}
-            <div className="border-t border-gray-200 px-6 py-4 text-xs text-gray-500">
-              © 2026 Admin System
-            </div>
           </aside>
           {/* Main area */}
           <div className="flex flex-1 flex-col">
