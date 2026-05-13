@@ -2,10 +2,10 @@ import tokenBearer from "@/lib/bearer-token";
 
 const baseURL = "http://localhost:8080";
 
-const tourService = {
+const blogService = {
     async getTours() {
         try {
-            const res = await tokenBearer.get(`${baseURL}/tours`, {
+            const res = await tokenBearer.get(`${baseURL}/blogs`, {
                 withCredentials: true,
             });
             return res.data.data;
@@ -17,4 +17,4 @@ const tourService = {
 
 
 };
-export default tourService;
+export default blogService;

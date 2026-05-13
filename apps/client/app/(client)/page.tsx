@@ -9,7 +9,7 @@ import Tabs from "@/components/ui/Tab";
 import DestinationGrid from "@/components/home/DestinationCard";
 import CategoryCard from "@/components/home/Category";
 import SeeAllButton from "@/components/ui/SeeAllButton";
-import BlogCardSection from "@/components/home/BlogCard";
+import BlogCardSection from "@/components/blog-section";
 import SearchBar from "@/components/search-bar";
 import CategorySection from "@/components/category-section";
 import TourSection from "@/components/tour-section";
@@ -36,6 +36,7 @@ export default function HomePage() {
       <div className="h-28"></div>
       <HeroSlider />
       <div className="h-28"></div>
+      {/* <CategoryCardSection /> */}
       <section className="wrapper-surface">
         <div className="container-main">
           <SectionTitle
@@ -45,7 +46,6 @@ export default function HomePage() {
           ></SectionTitle>
           <CategorySection />
         </div>
-        {/* <CategoryCardSection /> */}
       </section>
       {/* Tour card */}
       <section className="wrapper-surface-low ">
@@ -58,16 +58,15 @@ export default function HomePage() {
           <TourSection />
         </div>
       </section>
-      {/* Featured Destinations */}
+      {/* Last minute tour card */}
       <section className="wrapper-surface">
         <div className="container-main">
           <SectionTitle
-            align="text-center mx-auto"
-            title="Điểm đến hàng đầu"
-            description="Khám phá những điểm đến được yêu thích nhất với cảnh đẹp ấn tượng, trải nghiệm đa dạng và hành trình phù hợp cho mọi du khách."
+            align="text-left"
+            title="Đừng bỏ lỡ hành trình này"
+            description="Những chuyến đi được yêu thích nhất đang sắp hết hạn đặt chỗ. Đừng bỏ lỡ cơ hội trải nghiệm hành trình tuyệt vời cùng bạn bè và gia đình."
           />
-          <Tabs />
-          <DestinationGrid />
+          <TourSection />
         </div>
       </section>
       {/* Blog */}

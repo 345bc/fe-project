@@ -48,7 +48,7 @@ const ListSlider = ({ children }: ListSliderProps) => {
   return (
     <div className="relative  w-full">
       <div
-        className={`hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-300 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-100 transition-opacity duration-300 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <button
           onClick={() => scrollOneCard("left")}
@@ -64,14 +64,14 @@ const ListSlider = ({ children }: ListSliderProps) => {
         className="flex gap-4 md:gap-6 flex-nowrap overflow-x-auto no-scrollbar snap-x-mandatory scroll-smooth pb-8 pt-4 -mt-4"
       >
         {React.Children.map(children, (child) => (
-          <div className="flex-none h-full w-[85%] md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] snap-start">
+          <div className="flex-none h-full w-[85%]  md:w-[calc(50%-12px)] lg:w-[calc(30%-4px)] snap-start">
             {child}
           </div>
         ))}
       </div>
 
       <div
-        className={`hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-300 ${showRight ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-50 transition-opacity duration-300 ${showRight ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <button
           onClick={() => scrollOneCard("right")}

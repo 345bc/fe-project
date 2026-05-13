@@ -10,7 +10,7 @@ const categoryService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message || 'Failed to fetch category';
+            const message = e.response?.data?.message;
             throw new Error(message);
         }
     },

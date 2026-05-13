@@ -22,40 +22,46 @@ const TourCard = ({
   href,
 }: TourCardProps) => {
   return (
-    <div className="group flex flex-col h-full hover:scale-105 bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-transform duration-300 border-0">
-      <div className="relative h-[230px] w-full overflow-hidden">
-        <Image src={image} alt={title} fill />
+    <div className="group flex flex-col items-center z-50 relative rounded-2xl overflow-hidden  shadow-lg">
+      <div className="relative h-[250px] w-full overflow-hidden">
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="group-hover:scale-105 transition-all duration-500 "
+        />
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
+      <div className="bg-ghostwhite w-full flex items-center  h-[250px] "></div>
+      <div className="p-5 flex flex-col flex-1 w-[95%] bg-surface rounded-2xl absolute bottom-2">
         <div className="flex justify-between items-center mb-3 text-gray-500 text-[0.9rem]">
-          <small className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-primary text-[16px]">
+          <small className="flex items-center gap-1 font-normal tracking-wide text-sm">
+            <span className="material-symbols-outlined text-primary ">
               sell
             </span>
             {category}
           </small>
-          <small className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-primary text-[16px]">
+          <small className="flex items-center gap-1 font-normal tracking-wide text-sm">
+            <span className="material-symbols-outlined text-primary ">
               schedule
             </span>
             {duration}
           </small>
         </div>
 
-        <h5 className="text-[1.25rem] font-bold text-gray-900 mb-3 leading-tight group-hover:text-primary transition-colors line-clamp-2 min-h-[2.4em]">
+        <h5 className="font-semibold tracking-tight text-xl mb-2 truncate leading-normal group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.4em]">
           {title}
         </h5>
 
-        <p className="text-gray-500 mb-4 trun text-[0.95rem] leading-[1.6] line-clamp-3 min-h-[4.8em]">
+        <p className="font-normal tracking-wide text-balance mb-2 truncate text-sm leading-relaxed line-clamp-3 min-h-[4.8em]">
           {description}
         </p>
 
         <hr className="opacity-10 mt-auto" />
 
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-[#13357B] text-[1.1rem] font-extrabold">
-            {price} đ
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-primary text-xl font-extrabold">
+            {price.toLocaleString("vi-VN")}đ
           </span>
           <Link
             href={href}
