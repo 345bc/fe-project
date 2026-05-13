@@ -119,6 +119,7 @@
   --color-red-700: #b91c1c;
 
   /* Green */
+  --color-match-mist: #c2d8c4;
   --color-green-50: #f0fdf4;
   --color-green-500: #22c55e;
   --color-green-600: #16a34a;
@@ -126,7 +127,7 @@
 
   /* white alternative*/
   --color-ghostwhite: #f8f8ff;
-  --color-platinum: #e5e4e2;
+  --color-platinum: #f5f5f5;
   --color-alabaster: #FAFAFFA;
   --color-azure: #f0ffff;
   /* Surface colors */

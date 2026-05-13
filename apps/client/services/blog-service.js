@@ -3,7 +3,7 @@ import tokenBearer from "@/lib/bearer-token";
 const baseURL = "http://localhost:8080";
 
 const blogService = {
-    async getTours() {
+    async getBlogs() {
         try {
             const res = await tokenBearer.get(`${baseURL}/blogs`, {
                 withCredentials: true,

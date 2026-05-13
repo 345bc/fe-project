@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import ListSlider from "./ui/ListSlider";
 import TourCard from "./ui/TourCard";
-import categoryService from "@/services/tour-service";
 import tourService from "@/services/tour-service";
 
 export type Tours = {

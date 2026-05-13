@@ -19,7 +19,7 @@ const CategoryCard = ({ image, title, href }: CategoryCardProps) => (
       alt={title}
       fill
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      className="hover:scale-105 transition-all duration-300"
+      className="hover:scale-105 transition-all duration-300 "
     />
 
     <div className="translate-x-full  absolute  group-hover:-translate-x-1 rounded-lg    transition-transform duration-300 bg-ghostwhite right-2 top-2   overflow-hidden">
@@ -27,14 +27,6 @@ const CategoryCard = ({ image, title, href }: CategoryCardProps) => (
         {title}
       </span>
     </div>
-
-    {/* <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" /> */}
-
-    {/* <div className="absolute inset-x-0 bottom-0 p-6 md:p-10 flex justify-center">
-      <h3 className="text-white text-center font-bold tracking-tight  md:text-xl   leading-tight">
-        {title}
-      </h3>
-    </div> */}
   </Link>
 );
 

@@ -2,10 +2,10 @@ import Image from "next/image";
 import SectionTitle from "@/components/ui/SectionTitle";
 import HeroSlider from "@/components/home/HeroSlider";
 import SeeAllButton from "@/components/ui/SeeAllButton";
-import BlogCardSection from "@/components/blog-section";
 import SearchBar from "@/components/search-bar";
 import CategorySection from "@/components/category-section";
 import TourSection from "@/components/tour-section";
+import BlogCardSection from "@/components/blog-section";
 
 export default function HomePage() {
   return (

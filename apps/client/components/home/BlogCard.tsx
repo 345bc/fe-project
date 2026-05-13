@@ -4,16 +4,16 @@ import Link from "next/link";
 import React from "react";
 
 interface BlogCardProps {
-  id: number;
   title: string;
   image: string;
   date: string;
   category: string;
   description: string;
+  href: string;
 }
 
 const BlogCard = ({
-  id,
+  href,
   title,
   image,
   date,
@@ -21,40 +21,40 @@ const BlogCard = ({
   description,
 }: BlogCardProps) => {
   return (
-    <div className="group relative h-[280px] w-full rounded-xl overflow-hidden cursor-pointer shadow-md bg-black">
-      <Link href={`/blog/${id}`} className="block w-full h-full">
+    <div className=" group relative h-[290px] w-full rounded-xl overflow-hidden cursor-pointer shadow-sm">
+      <Link href={href} className="flex flex-col items-center w-full h-full">
         <Image
           src={image}
           alt={title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 opacity-90 group-hover:scale-105 group-hover:opacity-60"
         />
 
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-90 z-10" />
-
-        <div className="absolute top-[15px] right-[15px] bg-surface/95 text-gray-800 px-2.5 py-1 rounded-md text-[0.75rem] font-bold z-20 shadow-sm">
+        <div className="absolute top-2 right-2 bg-ghostwhite textprimary px-2.5 py-1 rounded-md text-xs font-semibold z-20 ">
           {date}
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full p-5 z-20 flex flex-col justify-end">
-          <div className="text-[0.7rem] uppercase tracking-wider text-blue-400 font-bold mb-1 opacity-90">
+        <div className="absolute bottom-2   backdrop-blur-xs  w-[90%] rounded-2xl  p-4 z-20 flex flex-col justify-end  group-hover:bg-surface-dark/70  ">
+          <div className="flex items-center gap-1 text-sm   tracking-wide text-surface rounded-lg  max-w-full  font-normal mb-2 ">
+            <span className="material-symbols-outlined text-surface  ">
+              Label
+            </span>
             {category}
           </div>
 
-          <h3 className="text-white text-lg font-bold leading-tight drop-shadow-lg line-clamp-2 transition-transform duration-300 group-hover:-translate-y-1">
+          <h3 className=" font-semibold tracking-tight text-xl leading-normal text-bright-white text-balance line-clamp-2 transition-transform duration-300 min-h-[3.2em]">
             {title}
           </h3>
 
-          <div className="text-white/85 text-[0.85rem] leading-relaxed max-h-0 opacity-0 overflow-hidden transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100 group-hover:mt-2">
-            <p className="line-clamp-3 italic">{description}</p>
+          <div className="text-white  leading-relaxed max-h-0  overflow-hidden transition-all duration-300 group-hover:max-h-24 group-hover:opacity-100 group-hover:mt-2">
+            <p className="  line-clamp-3 text-sm font-normal tracking-wide leading-normal min-h-[4.8em] italic">
+              {description}
+            </p>
           </div>
 
-          <div className="text-white text-[0.8rem] font-semibold mt-2 flex items-center opacity-0 translate-y-2 transition-all duration-300 delay-100 group-hover:opacity-100 group-hover:translate-y-0">
-            Đọc ngay{" "}
-            <span className="material-symbols-outlined text-[12px] ml-1">
-              chevron_right
-            </span>
+          <div className="text-white text-sm font-normal max-h-0 overflow-hidden group-hover:max-h-[2em]  tracking-tight  mt-2 flex items-center   transition-all duration-300 ml-auto">
+            Đọc ngay
+            <span className="material-symbols-outlined ">chevron_right</span>
           </div>
         </div>
       </Link>

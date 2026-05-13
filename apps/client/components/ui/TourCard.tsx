@@ -49,11 +49,11 @@ const TourCard = ({
           </small>
         </div>
 
-        <h5 className="font-semibold tracking-tight text-xl mb-2 truncate leading-normal group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.4em]">
+        <h5 className="font-semibold tracking-tight text-xl mb-2  leading-normal group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.4em]">
           {title}
         </h5>
 
-        <p className="font-normal tracking-wide text-balance mb-2 truncate text-sm leading-relaxed line-clamp-3 min-h-[4.8em]">
+        <p className="font-normal tracking-wide text-balance mb-2  text-sm leading-relaxed line-clamp-3 min-h-[4.8em]">
           {description}
         </p>
 
