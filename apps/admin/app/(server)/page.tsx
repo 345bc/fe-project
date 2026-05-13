@@ -1,5 +1,6 @@
 // apps/admin/app/page.tsx
-import { Button } from "@repo/ui";
+import Field from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 export default function AdminDashboard() {
   return (
@@ -18,6 +19,8 @@ export default function AdminDashboard() {
             Chào mừng trở lại! Dưới đây là thống kê chi tiết hôm nay.
           </p>
         </div>
+        <Input type="text" placeholder="Filter by id" />
+        <input type="" />
         <div className="relative z-10">
           <button className="group relative inline-flex items-center justify-center px-6 py-2.5 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 shadow-lg shadow-blue-500/30 overflow-hidden">
             <span className="relative z-10 flex items-center gap-2">

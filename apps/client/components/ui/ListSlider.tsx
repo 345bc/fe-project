@@ -47,18 +47,15 @@ const ListSlider = ({ children }: ListSliderProps) => {
 
   return (
     <div className="relative group w-full">
-      {/* Hide arrows on mobile, show on md and up */}
       <div
         className={`hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-300 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <button
           onClick={() => scrollOneCard("left")}
-          className="btn-nav-slider w-14 h-14 -ml-7 shadow-lg"
+          className="btn-nav-slider w-14 h-14 -ml-7 shadow-lg cursor-pointer"
           aria-label="Previous slide"
         >
-          <span className="material-symbols-outlined text-4xl">
-            chevron_left
-          </span>
+          <span className="material-symbols-outlined ">chevron_left</span>
         </button>
       </div>
 
@@ -67,8 +64,6 @@ const ListSlider = ({ children }: ListSliderProps) => {
         className="flex gap-4 md:gap-6 flex-nowrap overflow-x-auto no-scrollbar snap-x-mandatory scroll-smooth pb-8 pt-4 -mt-4"
       >
         {React.Children.map(children, (child) => (
-          /* Use flex-none and specific widths to prevent Flexbox layout shifts. 
-             On mobile, use w-[85%] so the next card peeks in to encourage swiping. */
           <div className="flex-none h-full w-[85%] md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] snap-start">
             {child}
           </div>
@@ -80,12 +75,10 @@ const ListSlider = ({ children }: ListSliderProps) => {
       >
         <button
           onClick={() => scrollOneCard("right")}
-          className="btn-nav-slider w-14 h-14 -mr-7 shadow-lg"
+          className="btn-nav-slider w-14 h-14 -mr-7 shadow-lg cursor-pointer"
           aria-label="Next slide"
         >
-          <span className="material-symbols-outlined text-4xl">
-            chevron_right
-          </span>
+          <span className="material-symbols-outlined ">chevron_right</span>
         </button>
       </div>
     </div>

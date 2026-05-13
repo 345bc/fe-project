@@ -54,6 +54,7 @@ export default async function UsersPage() {
 
   const users: User[] = data?.data || [];
 
+  
   return (
     <div className="space-y-5">
       {/* Page header */}

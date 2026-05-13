@@ -16,6 +16,7 @@ export default function UpdateCategoryPage() {
 
   const [name, setName] = useState("");
   const [introduce, setIntroduce] = useState("");
+  const [image, setImage] = useState<File | null>(null);
 
   useEffect(() => {
     if (!catId) { setError("Không tìm thấy ID"); setFetching(false); return; }
@@ -30,7 +31,13 @@ export default function UpdateCategoryPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); setLoading(true); setError(null); setSuccess(false);
     try {
-      await categoryService.patchCategory(catId, { name, introduce });
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("introduce", introduce);
+      if (image) {
+        formData.append("image", image);
+      }
+      await categoryService.patchCategory(catId, formData);
       setSuccess(true); setTimeout(() => router.push("/categories"), 1200);
     } catch (err: any) { setError(err?.message || "Cập nhật thất bại"); } finally { setLoading(false); }
   };
@@ -50,6 +57,8 @@ export default function UpdateCategoryPage() {
           <div className="space-y-5 px-6 py-6">
             <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Tên</label><input value={name} onChange={e=>setName(e.target.value)} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none" /></div>
             <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Mô tả</label><textarea value={introduce} onChange={e=>setIntroduce(e.target.value)} rows={3} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none resize-y" /></div>
+            <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Hình ảnh</label><input type="file" accept="image/*" onChange={e => setImage(e.target.files?.[0] || null)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-gray-900 focus:outline-none file:mr-4 file:rounded-full file:border-0 file:bg-gray-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-gray-700 hover:file:bg-gray-100 cursor-pointer" />
+            <p className="text-xs text-gray-500 mt-1">Chọn ảnh mới nếu muốn thay đổi ảnh hiện tại</p></div>
           </div>
           <div className="h-px bg-gray-200" />
           <div className="flex justify-end gap-3 px-6 py-4">

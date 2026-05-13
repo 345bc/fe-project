@@ -18,7 +18,7 @@ const SectionTitle = ({ title, description, align }: SectionTitleProps) => {
 
       {description && (
         <p
-          className={`text-gray-600 text-lg ${align} leading-relaxed max-w-4xl font-bold`}
+          className={`text-gray-600 text-lg ${align} tracking-tight  leading-relaxed max-w-4xl font-semibold`}
         >
           {description}
         </p>

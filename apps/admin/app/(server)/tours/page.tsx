@@ -163,7 +163,6 @@ export default async function TourPage() {
                       alt="tour-images"
                       width={200}
                       height={200}
-                      // className="w-full h-auto "
                     />
                   </td>
                   <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">
