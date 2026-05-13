@@ -12,22 +12,29 @@ interface CategoryCardProps {
 const CategoryCard = ({ image, title, href }: CategoryCardProps) => (
   <Link
     href={href}
-    className="relative block  hover:scale-105 overflow-hidden h-[300px] md:h-[260px] rounded-4xl transition-all duration-300"
+    className="relative group block   overflow-hidden h-[300px] md:h-[260px] rounded-2xl "
   >
     <Image
       src={image}
       alt={title}
       fill
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      className="hover:scale-105 transition-all duration-300"
     />
 
-    <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+    <div className="translate-x-full  absolute  group-hover:-translate-x-1 rounded-lg    transition-transform duration-300 bg-ghostwhite right-2 top-2   overflow-hidden">
+      <span className="text-base font-medium   tracking-tight   p-2 ">
+        {title}
+      </span>
+    </div>
 
-    <div className="absolute inset-x-0 bottom-0 p-6 md:p-10 flex justify-center">
+    {/* <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" /> */}
+
+    {/* <div className="absolute inset-x-0 bottom-0 p-6 md:p-10 flex justify-center">
       <h3 className="text-white text-center font-bold tracking-tight  md:text-xl   leading-tight">
         {title}
       </h3>
-    </div>
+    </div> */}
   </Link>
 );
 

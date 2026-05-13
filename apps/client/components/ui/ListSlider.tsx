@@ -46,7 +46,7 @@ const ListSlider = ({ children }: ListSliderProps) => {
   }, []);
 
   return (
-    <div className="relative group w-full">
+    <div className="relative  w-full">
       <div
         className={`hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-300 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
