@@ -14,7 +14,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <header className="relative w-full flex flex-col items-center">
         {/* Background Banner */}
-        <div className="relative w-full h-[260px] md:h-[420px] z-0">
+        <div className="relative w-full h-[260px] md:h-[420px] ">
           <Image
             src="/images/demo_banner.jpg"
             alt="banner"

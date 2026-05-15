@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "@/app/globals.css";
-import Navbar from "@/components/nav/Navbar";
 import Footer from "@/components/Footer";
 import { Inter, Poppins } from "next/font/google";
+import NavbarMain from "@/components/navbar";
 
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
@@ -50,7 +50,7 @@ export default function RootLayout({
       </head>
       <body className="bg-surface text-on-surface font-body antialiased">
         {/* Nav */}
-        <Navbar />
+        <NavbarMain />
 
         {/* Main content */}
         <main>{children}</main>
