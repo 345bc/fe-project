@@ -21,9 +21,9 @@ interface SliderProps {
   images?: string[];
 }
 const imagesilder = [
-  "/images/demo.png",
-  "/images/demo.png",
-  "/images/demo.png",
+  "/images/slider-1.jpg",
+  "/images/slider-2.jpg",
+  "/images/slider-3.jpg",
 ];
 
 export default function HeroSlider({ images = imagesilder }: SliderProps) {

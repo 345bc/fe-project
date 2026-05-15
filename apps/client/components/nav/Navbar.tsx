@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { useAuth } from "@/hooks/useAuth";
+import DropdownMenu from "../dropdown-menu";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -45,7 +46,7 @@ export default function Navbar() {
           <Link
             href="/"
             className={`text-2xl font-black tracking-tighter transition-colors duration-300 ${
-              isScrolled ? "text-[#13357B]" : "text-white"
+              isScrolled ? "text-primary" : "text-white"
             }`}
           >
             ZTRAVEL
@@ -53,11 +54,12 @@ export default function Navbar() {
 
           {/* Menu Links */}
           <div
-            className={`hidden md:flex gap-10 font-medium text-sm uppercase tracking-widest transition-colors duration-300 ${
-              isScrolled ? "text-gray-700" : "text-white/90"
+            className={`hidden md:flex gap-10 font-bold text-base uppercase tracking-widest transition-colors duration-300 ${
+              isScrolled ? "text-primary" : "text-white/90"
             }`}
           >
-            {["Điểm đến", "Tours", "Cruises", "Offers"].map((item) => (
+            <DropdownMenu />
+            {["Tours", "Cruises", "Offers"].map((item) => (
               <Link
                 key={item}
                 href={`/${item.toLowerCase()}`}
