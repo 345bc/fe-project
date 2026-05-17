@@ -28,7 +28,7 @@ export default function DropdownMenu() {
         Điểm đến
         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
       </button>
-      <div className="absolute  top-full left-0 mt-2  min-w-max   ">
+      <div className="fixed top-18 left-0 w-screen  border-zinc-400/50 z-50 ">
         {isOpen && <Dropdown />}
       </div>
     </div>

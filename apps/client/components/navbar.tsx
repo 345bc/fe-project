@@ -35,7 +35,7 @@ export default function NavbarMain() {
 
   return (
     <>
-      <nav className="sticky top-0 w-full z-50 bg-surface py-3 shadow-xl">
+      <nav className="sticky top-0 w-full z-100 bg-surface py-3 shadow-xl">
         <div className="flex justify-between items-center container-main mx-auto md:px-12">
           <Link
             href="/"
