@@ -1,10 +1,23 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Dropdown from "./abc";
 
 export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Đóng dropdown khi bắt đầu chuyển trang
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setIsOpen(false);
+    };
+
+    // Next.js App Router không có router.events, dùng pathname effect
+    setIsOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,9 +41,12 @@ export default function DropdownMenu() {
         Điểm đến
         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
       </button>
-      <div className="fixed top-18 left-0 w-screen  border-zinc-400/50 z-50 ">
-        {isOpen && <Dropdown />}
-      </div>
+
+      {isOpen && (
+        <div className="fixed top-18 left-0 w-screen border-zinc-400/50 z-50">
+          <Dropdown />
+        </div>
+      )}
     </div>
   );
 }

@@ -15,6 +15,26 @@ const destinationService = {
         }
     },
 
+    async getAll() {
+        try {
+            const res = await tokenBearer.get(`${baseURL}/destinations`, {
+                withCredentials: true,
+            });
+            return res.data.data;
+        } catch (e) {
+            const message = e.response?.data?.message;
+            throw new Error(message);
+        }
+    },
 
+    async getDestinationById(id) {
+        try {
+            const res = await tokenBearer.get(`${baseURL}/destinations/${id}`);
+            return res.data.data;
+        } catch (e) {
+            return null;
+        }
+    },
 };
 export default destinationService;
+
