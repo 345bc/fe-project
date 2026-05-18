@@ -90,7 +90,7 @@ export default function Dropdown() {
                   {(destinationsByGroup[region.id] ?? []).map((des) => (
                     <Link
                       key={des.id}
-                      href={`/destinations/${des.id}`}
+                      href={`/destination/${des.id}`}
                       className="text-xs text-text-secondary py-4  "
                     >
                       {des.name}
@@ -127,7 +127,7 @@ export default function Dropdown() {
                   {(destinationsByGroup[region.id] ?? []).map((des) => (
                     <Link
                       key={des.id}
-                      href={`/destinations/${des.id}`}
+                      href={`/destination/${des.id}`}
                       className="text-xs text-text-secondary py-4"
                     >
                       {des.name}
