@@ -60,7 +60,7 @@ export default function TourSection() {
           duration={tour.duration}
           price={tour.price}
           description={tour.description}
-          href="/"
+          href={`/detail/${tour.id}`}
         />
       ))}
     </ListSlider>

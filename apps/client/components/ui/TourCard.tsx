@@ -34,26 +34,22 @@ const TourCard = ({
 
       <div className="bg-ghostwhite w-full flex items-center  h-[250px] "></div>
       <div className="p-5 flex flex-col flex-1 w-[95%] bg-surface rounded-2xl absolute bottom-2">
-        <div className="flex justify-between items-center mb-3 text-gray-500 text-[0.9rem]">
-          <small className="flex items-center gap-1 font-normal tracking-wide text-sm">
-            <span className="material-symbols-outlined text-primary ">
-              sell
-            </span>
+        <div className="flex justify-between items-center mb-3 text-text-secondary  font-semibold font-sans tracking-tight text-base">
+          <small className="flex items-center gap-1 ">
+            <span className="material-symbols-outlined  ">sell</span>
             {category}
           </small>
-          <small className="flex items-center gap-1 font-normal tracking-wide text-sm">
-            <span className="material-symbols-outlined text-primary ">
-              schedule
-            </span>
+          <small className="flex items-center gap-1 ">
+            <span className="material-symbols-outlined  ">schedule</span>
             {duration}
           </small>
         </div>
 
-        <h5 className="font-semibold tracking-tight text-xl mb-2  leading-normal group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.4em]">
+        <h5 className="font-semibold tracking-tight text-xl  mb-2  leading-normal group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.4em]">
           {title}
         </h5>
 
-        <p className="font-normal tracking-wide text-balance mb-2  text-sm leading-relaxed line-clamp-3 min-h-[4.8em]">
+        <p className="font-normal tracking-wide text-balance  mb-2  text-sm leading-relaxed line-clamp-3 min-h-[4.8em]">
           {description}
         </p>
 

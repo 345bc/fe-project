@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, use, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Breadcrumb from "@/components/ui/breadcum";
+import Image from "next/image";
 import {
   Search,
   MapPin,
@@ -9,12 +11,44 @@ import {
   SlidersHorizontal,
   Grid,
   List,
-  Star,
-  Heart,
   ChevronDown,
   Leaf,
 } from "lucide-react";
 import destinationService from "@/services/destination-service";
+import tourService from "@/services/tour-service";
+import TourCard from "@/components/ui/TourCard";
+import CustomSelect, { Option } from "@/components/ui/CustomSelect";
+
+const attractionOptions: Option[] = [
+  { id: 1, name: "Vinpearl Safari" },
+  { id: 2, name: "Chợ Đêm" },
+  { id: 3, name: "Hồ Tuyền Lâm" },
+  { id: 4, name: "Bà Nà Hills" },
+  { id: 5, name: "Fansipan" },
+];
+
+export type Tours = {
+  id: number;
+  name: string;
+  price: number;
+  duration: string;
+  image: string;
+  description: string;
+  categories: {
+    id: number;
+    name: string;
+    introduce: string;
+    image: string;
+  };
+  destination: {
+    id: number;
+    name: string;
+  };
+  transports: {
+    id: number;
+    name: string;
+  };
+};
 
 export type Destinations = {
   id: number;
@@ -28,44 +62,6 @@ export type Destinations = {
     updated_at: string;
   };
 };
-const TOURS_DATA = [
-  {
-    id: 1,
-    title: "Tour Khám Phá Paris Cổ Kính & Cung Điện Versailles",
-    image:
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80",
-    tag: "Tiêu chuẩn",
-    tagColor: "bg-blue-600",
-    rating: 4.9,
-    reviews: 128,
-    duration: "7 Ngày 6 Đêm",
-    price: "45.900.000",
-  },
-  {
-    id: 2,
-    title: "Hành Trình Về Miền Quê Pháp & Làng Cổ Tích Colmar",
-    image:
-      "https://images.unsplash.com/photo-1549144511-f099e773c147?auto=format&fit=crop&w=600&q=80",
-    tag: "Giá tốt",
-    tagColor: "bg-emerald-600",
-    rating: 4.8,
-    reviews: 94,
-    duration: "8 Ngày 7 Đêm",
-    price: "39.900.000",
-  },
-  {
-    id: 3,
-    title: "Du Thuyền Sông Seine & Ngắm Hoàng Hôn Miền Nam Nước Pháp",
-    image:
-      "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=600&q=80",
-    tag: "Giá tốt",
-    tagColor: "bg-emerald-600",
-    rating: 4.7,
-    reviews: 62,
-    duration: "6 Ngày 5 Đêm",
-    price: "34.500.000",
-  },
-];
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -74,64 +70,71 @@ interface PageProps {
 export default function DestinationPage({ params }: PageProps) {
   const { id: rawId } = use(params);
   const id = parseInt(rawId);
-  const [destinations, setDestinations] = useState<Destinations[]>([]);
+  const [destination, setDestination] = useState<Destinations | null>(null);
+  const [tours, setTours] = useState<Tours[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allDestinations, setAllDestinations] = useState<Option[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchTours = async () => {
-      const data = await destinationService.getDestinationById();
-      setDestinations(data);
-      setLoading(false);
+    const fetchData = async () => {
+      if (isNaN(id)) return;
+      try {
+        const [destData, toursData, allDestData] = await Promise.all([
+          destinationService.getDestinationById(id),
+          tourService.getTourByDestination(id),
+          destinationService.getAll(),
+        ]);
+        setDestination(destData);
+        setTours(toursData);
+        if (allDestData && Array.isArray(allDestData)) {
+          setAllDestinations(
+            allDestData.map((d: any) => ({ id: d.id, name: d.name })),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchTours();
-  }, []);
+    fetchData();
+  }, [id]);
+
+  const [isEsgActive, setIsEsgActive] = useState(false);
 
   if (loading)
     return (
-      <div className="animate-pulse">
+      <div className="animate-pulse py-4">
         <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
         <div className="h-4 bg-gray-200 rounded w-1/2"></div>
       </div>
     );
-
-  const [isEsgActive, setIsEsgActive] = useState(false);
-  const [favorites, setFavorites] = useState<number[]>([]);
-
-  const toggleFavorite = (tourId: number) => {
-    setFavorites((prev) =>
-      prev.includes(tourId)
-        ? prev.filter((item) => item !== tourId)
-        : [...prev, tourId],
-    );
-  };
 
   if (isNaN(id)) {
     return <div>ID không hợp lệ: {rawId}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-surface font-sans text-slate-800 antialiased">
+    <div className="min-h-screen bg-surface font-sans  antialiased">
       {/* 1. HERO BANNER */}
-      <section className="relative h-[440px] w-full overflow-hidden bg-slate-900 text-white">
-        <img
-          src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1920&q=80"
-          alt="France Destination"
-          className="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-multiply"
+      <section className="relative h-[320px] w-full overflow-hidden  text-white">
+        <Image
+          alt={destination?.name || "destination"}
+          src={`/images/${destination?.image}`}
+          loading="eager"
+          fill
         />
         <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-transparent to-transparent" />
-
         <div className="relative mx-auto flex h-full container-main flex-col justify-between px-4 py-8 md:px-6">
-          <div className="[&_a]:text-slate-300 [&_span]:text-white [&_li]:text-slate-400 [&_a:hover]:text-white">
-            <Breadcrumb />
-          </div>
-
-          <div className="mb-16 max-w-3xl">
-            <h1 className="mb-4 text-4xl font-extrabold tracking-wide md:text-5xl lg:text-6xl">
-              PHÁP
+          <Breadcrumb />
+          <div className="mb-4 max-w-full flex flex-col items-center">
+            <h1 className="mb-4 text-center text-4xl font-extrabold tracking-wide uppercase md:text-5xl lg:text-4xl">
+              {destination?.name}
             </h1>
-            <p className="text-base leading-relaxed text-slate-200 md:text-lg">
-              Pháp luôn được xem là đất nước lãng mạn nhất thế giới, một quốc
-              gia giàu truyền thống văn hóa, lịch sử.
+
+            <p className="text-sm  font-semibold max-w-[70vw] tracking-tight leading-normal text-balance  text-center md:text-lg">
+              {destination?.introduce || ""}
             </p>
           </div>
         </div>
@@ -140,8 +143,8 @@ export default function DestinationPage({ params }: PageProps) {
       {/* MAIN CONTENT */}
       <main className="container-main md:px-6">
         {/* 2. FLOATING SEARCH BAR */}
-        <div className="relative -mt-10 z-10 mb-12 rounded-2xl bg-white p-4 shadow-xl border border-slate-100">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="relative  mb-12 rounded-2xl bg-white p-4 shadow-xl border border-slate-100">
+          {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex items-center gap-3 border-b pb-2 sm:border-b-0 sm:border-r sm:pb-0 sm:pr-4 border-slate-100">
               <Compass className="h-5 w-5 text-blue-600 shrink-0" />
               <div className="w-full">
@@ -190,25 +193,25 @@ export default function DestinationPage({ params }: PageProps) {
                 <span>Đổi tìm kiếm</span>
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* 3. SIDEBAR + RESULTS */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* SIDEBAR */}
-          <aside className="space-y-6 lg:col-span-1">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+          <aside className="space-y-6 lg:col-span-1 lg:sticky lg:top-32 self-start hidden md:block">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
               <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-3">
-                <h2 className="flex items-center gap-2 font-bold text-slate-900 text-lg">
-                  <SlidersHorizontal className="h-4 w-4 text-slate-500" />
+                <h2 className="flex items-center gap-2 font-bold font-sans tracking-tight  text-text-primary text-lg">
+                  <SlidersHorizontal className="h-4 w-4 text-slate-500 " />
                   Bộ lọc tìm kiếm
                 </h2>
-                <button className="text-sm font-medium text-blue-600 hover:underline">
+                <button className="text-sm font-medium text-zinc-300 hover:text-primary hover:font-bold">
                   Đặt lại
                 </button>
               </div>
 
-              {/* ESG Toggle */}
+              {/* ESG Toggle
               <div className="mb-6 rounded-xl bg-emerald-50/50 p-3.5 border border-emerald-100 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <Leaf className="h-5 w-5 text-emerald-600" />
@@ -231,19 +234,33 @@ export default function DestinationPage({ params }: PageProps) {
                     }`}
                   />
                 </button>
-              </div>
+              </div> */}
 
-              <div className="space-y-4">
+              <div className="space-y-4 ">
                 <div>
-                  <label className="mb-1.5 block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <label className="mb-1.5 block text-sm font-semibold font-sans text-text-secondary  tracking-wider">
                     Điểm đến
                   </label>
-                  <div className="relative">
-                    <select className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-2.5 pr-10 font-medium text-slate-700 outline-none transition focus:border-blue-500">
-                      <option>Chọn điểm đến</option>
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none text-slate-400" />
-                  </div>
+                  <CustomSelect
+                    options={allDestinations}
+                    placeholder="Chọn điểm đến"
+                    onChange={(val) => {
+                      if (val) {
+                        router.push(`/destination/${val.id}`);
+                      }
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-sm font-semibold font-sans text-text-secondary  tracking-wider">
+                    Điểm tham quan
+                  </label>
+                  <CustomSelect
+                    options={attractionOptions}
+                    placeholder="Chọn điểm tham quan"
+                    onChange={(val) => console.log("Selected attr:", val)}
+                  />
                 </div>
 
                 <div className="pt-2">
@@ -281,7 +298,9 @@ export default function DestinationPage({ params }: PageProps) {
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-slate-500 text-sm">
                 Kết quả:{" "}
-                <span className="font-bold text-slate-900 text-lg">31</span>{" "}
+                <span className="font-bold text-slate-900 text-lg">
+                  {tours.length}
+                </span>{" "}
                 chương trình tour
               </p>
 
@@ -304,74 +323,17 @@ export default function DestinationPage({ params }: PageProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {TOURS_DATA.map((tour) => (
-                <article
+              {tours.map((tour) => (
+                <TourCard
                   key={tour.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
-                >
-                  <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-100">
-                    <img
-                      src={tour.image}
-                      alt={tour.title}
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                    />
-                    <span
-                      className={`absolute left-3 top-3 rounded-lg px-3 py-1 text-xs font-bold text-white shadow-sm ${tour.tagColor}`}
-                    >
-                      {tour.tag}
-                    </span>
-                    <button
-                      onClick={() => toggleFavorite(tour.id)}
-                      className="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-slate-600 backdrop-blur-sm transition hover:bg-white hover:text-rose-600 shadow-sm"
-                    >
-                      <Heart
-                        className={`h-4 w-4 transition-colors ${
-                          favorites.includes(tour.id)
-                            ? "fill-rose-600 text-rose-600"
-                            : ""
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  <div className="flex flex-1 flex-col p-4">
-                    <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-slate-500">
-                      <div className="flex items-center gap-0.5 text-amber-500">
-                        <Star className="h-3.5 w-3.5 fill-current" />
-                        <span className="font-bold text-slate-800">
-                          {tour.rating}
-                        </span>
-                      </div>
-                      <span>•</span>
-                      <span>({tour.reviews} đánh giá)</span>
-                    </div>
-
-                    <h3 className="mb-2 line-clamp-2 text-base font-bold text-slate-900 group-hover:text-blue-600 transition">
-                      {tour.title}
-                    </h3>
-
-                    <p className="mb-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                      Thời gian:{" "}
-                      <span className="text-slate-600 normal-case">
-                        {tour.duration}
-                      </span>
-                    </p>
-
-                    <div className="mt-auto border-t border-slate-100 pt-3 flex items-center justify-between">
-                      <div>
-                        <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                          Giá từ
-                        </span>
-                        <span className="text-lg font-black text-rose-600">
-                          {tour.price} đ
-                        </span>
-                      </div>
-                      <button className="rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold text-blue-600 transition hover:bg-blue-600 hover:text-white">
-                        Xem chi tiết
-                      </button>
-                    </div>
-                  </div>
-                </article>
+                  image={`/images/${tour.image}`}
+                  category={tour.categories.name}
+                  title={tour.name}
+                  duration={tour.duration}
+                  price={tour.price}
+                  description={tour.description}
+                  href="/"
+                />
               ))}
             </div>
           </section>

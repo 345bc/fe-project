@@ -26,5 +26,17 @@ const tourService = {
             throw new Error(message);
         }
     },
+
+    async getTourByDestination(id) {
+        try {
+            const res = await tokenBearer.get(`${baseURL}/tours/destination/${id}`, {
+                withCredentials: true,
+            });
+            return res.data.data;
+        } catch (e) {
+            const message = e.response?.data?.message;
+            throw new Error(message);
+        }
+    },
 };
 export default tourService;

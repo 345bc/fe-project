@@ -132,18 +132,20 @@ export default function Breadcrumb() {
           <Fragment key={item.href}>
             <li>
               {item.isCurrent ? (
-                <span className="text-gray-500 font-medium">{item.label}</span>
+                <span className="text-surface font-bold text-sm tracking-tight">
+                  {item.label}
+                </span>
               ) : (
                 <Link
                   href={item.href}
-                  className="text-primary hover:text-primary-dark hover:underline transition"
+                  className="text-surface font-bold  text-sm tracking-tight hover:underline hover:text-blue-400 transition-colors duration-100"
                 >
                   {item.label}
                 </Link>
               )}
             </li>
             {index < breadcrumbs.length - 1 && (
-              <li className="text-gray-400 select-none">/</li>
+              <li className="text-surface text-sm select-none">/</li>
             )}
           </Fragment>
         ))}
