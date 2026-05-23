@@ -6,7 +6,7 @@ import SearchBar from "@/components/search-bar";
 import CategorySection from "@/components/category-section";
 import TourSection from "@/components/tour-section";
 import BlogCardSection from "@/components/blog-section";
-import TravelMenu from "@/components/abc";
+import TravelMenu from "@/components/drop-down";
 
 export default function HomePage() {
   return (

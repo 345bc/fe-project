@@ -65,14 +65,14 @@ export default function Dropdown() {
     );
 
   return (
-    <div className="flex flex-col items-start    bg-surface w-[20em] mr-auto h-64 ">
+    <div className="flex flex-col items-start bg-surface w-[20em]  h-64  ">
       <div className="group/1 relative">
         <div
           onClick={() => setActiveTab("tab-first")}
           className={`flex items-center justify-between   w-[20em]   p-4   transition-all duration-300 hover:shadow-md   ${activeTab === "tab-first" ? "bg-blue-400" : "bg-blue-100"}`}
         >
           <div
-            className={`text-base font-normal  tracking-wide ${activeTab === "tab-first" ? "text-surface" : ""}   `}
+            className={`text-sm font-normal  tracking-wide ${activeTab === "tab-first" ? "text-surface" : ""}   `}
           >
             Du lịch trong nước
           </div>
@@ -80,18 +80,18 @@ export default function Dropdown() {
         </div>
 
         {activeTab === "tab-first" && (
-          <div className="absolute top-0 left-full flex flex-row justify-between h-64  w-[calc(100vw-20em)] bg-surface px-10  z-50 border">
+          <div className="absolute top-0 left-full flex flex-row justify-between h-64  w-[calc(100vw-20em-16px)] shadow-xl  bg-surface px-10  z-50 border">
             {domesticGroup.map((region) => (
               <div key={region.id} className="flex flex-col  ">
-                <h4 className="text-base font-bold tracking-tight  py-4 text-text-primary   normal-case ">
+                <h4 className="text-sm font-bold tracking-tight  py-4 text-text-primary   normal-case ">
                   {region.name}
                 </h4>
-                <div className="flex flex-col  normal-case items-start">
+                <div className="flex flex-col  normal-case items-start">  
                   {(destinationsByGroup[region.id] ?? []).map((des) => (
                     <Link
                       key={des.id}
                       href={`/destination/${des.id}`}
-                      className="text-xs text-text-secondary py-4  "
+                      className="text-sm font-sm text-text-secondary py-4  "
                     >
                       {des.name}
                     </Link>
@@ -109,7 +109,7 @@ export default function Dropdown() {
           className={`flex items-center justify-between  p-4  w-[20em]   transition-all duration-300 hover:shadow-md   ${activeTab === "tab-second" ? "bg-blue-400" : "bg-blue-100"}`}
         >
           <div
-            className={`text-base font-normal  tracking-wide ${activeTab === "tab-second" ? "text-surface" : ""}   `}
+            className={`text-sm font-normal  tracking-wide ${activeTab === "tab-second" ? "text-surface" : ""}   `}
           >
             Du lịch nước ngoài
           </div>
@@ -117,10 +117,10 @@ export default function Dropdown() {
         </div>
 
         {activeTab === "tab-second" && (
-          <div className="absolute top-0 -translate-y-14 left-full flex flex-row h-64 justify-between w-[calc(100vw-20em)] bg-surface px-10 z-50 border">
+          <div className="absolute top-0 -translate-y-14 left-full flex flex-row h-64 justify-between w-[calc(100vw-20em-16px)] bg-surface px-10 z-50 border">
             {foreignGroup.map((region) => (
               <div key={region.id} className="flex flex-col">
-                <h4 className="text-base font-bold tracking-tight py-4 text-text-primary normal-case">
+                <h4 className="text-sm font-bold tracking-tight py-4 text-text-primary normal-case">
                   {region.name}
                 </h4>
                 <div className="flex flex-col normal-case items-start">
@@ -128,7 +128,7 @@ export default function Dropdown() {
                     <Link
                       key={des.id}
                       href={`/destination/${des.id}`}
-                      className="text-xs text-text-secondary py-4"
+                      className="text-sm font-sans text-text-secondary py-4"
                     >
                       {des.name}
                     </Link>

@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, use, useEffect } from "react";
+import React, { useState, use, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Breadcrumb from "@/components/ui/breadcum";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   MapPin,
@@ -16,8 +17,10 @@ import {
 } from "lucide-react";
 import destinationService from "@/services/destination-service";
 import tourService from "@/services/tour-service";
+import categoryService from "@/services/category-service";
 import TourCard from "@/components/ui/TourCard";
 import CustomSelect, { Option } from "@/components/ui/CustomSelect";
+import PriceRangeSlider from "@/components/ui/PriceRangeSlider";
 
 const attractionOptions: Option[] = [
   { id: 1, name: "Vinpearl Safari" },
@@ -74,23 +77,65 @@ export default function DestinationPage({ params }: PageProps) {
   const [tours, setTours] = useState<Tours[]>([]);
   const [loading, setLoading] = useState(true);
   const [allDestinations, setAllDestinations] = useState<Option[]>([]);
+  const [selectedDestinations, setSelectedDestinations] = useState<Option[]>([]);
+  const [selectedAttractions, setSelectedAttractions] = useState<Option[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  const [minLimitPrice, setMinLimitPrice] = useState(0);
+  const [maxLimitPrice, setMaxLimitPrice] = useState(50000000);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
+  const [isPriceExpanded, setIsPriceExpanded] = useState(true);
+  const [sortBy, setSortBy] = useState<string>("nearest");
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Đồng bộ điểm đến mặc định từ URL vào danh sách đã chọn
+  useEffect(() => {
+    if (destination) {
+      setSelectedDestinations([{ id: destination.id, name: destination.name }]);
+    }
+  }, [destination]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (isNaN(id)) return;
       try {
-        const [destData, toursData, allDestData] = await Promise.all([
+        const [destData, toursData, allDestData, categoriesData] = await Promise.all([
           destinationService.getDestinationById(id),
-          tourService.getTourByDestination(id),
+          tourService.getTours(), // Tải toàn bộ tour để hỗ trợ lọc đa điểm đến trên cùng một trang
           destinationService.getAll(),
+          categoryService.getCategories(),
         ]);
         setDestination(destData);
         setTours(toursData);
+        setCategories(categoriesData || []);
         if (allDestData && Array.isArray(allDestData)) {
           setAllDestinations(
             allDestData.map((d: any) => ({ id: d.id, name: d.name })),
           );
+        }
+        if (toursData && Array.isArray(toursData) && toursData.length > 0) {
+          const prices = toursData
+            .map((t: any) => t.price)
+            .filter((p: any) => typeof p === "number" && !isNaN(p));
+          if (prices.length > 0) {
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            setMinLimitPrice(minPrice);
+            setMaxLimitPrice(maxPrice);
+            setPriceRange([minPrice, maxPrice]);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -115,8 +160,58 @@ export default function DestinationPage({ params }: PageProps) {
     return <div>ID không hợp lệ: {rawId}</div>;
   }
 
+  const filteredTours = tours.filter(tour => {
+    const matchDest = selectedDestinations.length > 0 && selectedDestinations.some(d => d.id === tour.destination?.id);
+    const matchAttr = selectedAttractions.length === 0 || selectedAttractions.some(attr =>
+      tour.name.toLowerCase().includes(attr.name.toLowerCase()) ||
+      tour.description.toLowerCase().includes(attr.name.toLowerCase())
+    );
+    const matchCate = selectedCategoryIds.length === 0 || selectedCategoryIds.includes(tour.categories?.id);
+    // Nếu giá trị kéo tối đa gần sát với giới hạn lớn nhất (trong khoảng bước nhảy 100k), xem như cho phép hiển thị mọi tour dưới mức giá trần để không bị mất tour lẻ
+    const maxSelectablePrice = priceRange[1] >= maxLimitPrice - 100000 ? maxLimitPrice : priceRange[1];
+    const matchPrice = tour.price >= priceRange[0] && tour.price <= maxSelectablePrice;
+    return matchDest && matchAttr && matchCate && matchPrice;
+  });
+
+  const getCategoryTourCount = (categoryId: number) => {
+    return tours.filter(tour => {
+      const matchDest = selectedDestinations.length > 0 && selectedDestinations.some(d => d.id === tour.destination?.id);
+      const matchAttr = selectedAttractions.length === 0 || selectedAttractions.some(attr =>
+        tour.name.toLowerCase().includes(attr.name.toLowerCase()) ||
+        tour.description.toLowerCase().includes(attr.name.toLowerCase())
+      );
+      // Nếu giá trị kéo tối đa gần sát với giới hạn lớn nhất (trong khoảng bước nhảy 100k), xem như cho phép hiển thị mọi tour dưới mức giá trần để không bị mất tour lẻ
+      const maxSelectablePrice = priceRange[1] >= maxLimitPrice - 100000 ? maxLimitPrice : priceRange[1];
+      const matchPrice = tour.price >= priceRange[0] && tour.price <= maxSelectablePrice;
+      return matchDest && matchAttr && matchPrice && tour.categories?.id === categoryId;
+    }).length;
+  };
+
+  const sortedTours = [...filteredTours].sort((a, b) => {
+    if (sortBy === "price-asc") {
+      return a.price - b.price;
+    }
+    if (sortBy === "price-desc") {
+      return b.price - a.price;
+    }
+    return b.id - a.id; // "nearest" -> newest added tours first
+  });
+
+  const handleResetFilters = () => {
+    if (destination) {
+      setSelectedDestinations([{ id: destination.id, name: destination.name }]);
+    } else {
+      setSelectedDestinations([]);
+    }
+    setSelectedAttractions([]);
+    setSelectedCategoryIds([]);
+    setPriceRange([minLimitPrice, maxLimitPrice]);
+    setSortBy("nearest");
+    setIsSortOpen(false);
+  };
+
   return (
-    <div className="min-h-screen bg-surface font-sans  antialiased">
+    <div className="min-h-screen bg-light font-sans  antialiased">
       {/* 1. HERO BANNER */}
       <section className="relative h-[320px] w-full overflow-hidden  text-white">
         <Image
@@ -141,9 +236,9 @@ export default function DestinationPage({ params }: PageProps) {
       </section>
 
       {/* MAIN CONTENT */}
-      <main className="container-main md:px-6">
+      <main className="container-main md:pb-40 md:px-6">
         {/* 2. FLOATING SEARCH BAR */}
-        <div className="relative  mb-12 rounded-2xl bg-white p-4 shadow-xl border border-slate-100">
+        <div className="relative  mb-12 rounded-2xl bg-white p-4  border border-slate-100">
           {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex items-center gap-3 border-b pb-2 sm:border-b-0 sm:border-r sm:pb-0 sm:pr-4 border-slate-100">
               <Compass className="h-5 w-5 text-blue-600 shrink-0" />
@@ -206,7 +301,10 @@ export default function DestinationPage({ params }: PageProps) {
                   <SlidersHorizontal className="h-4 w-4 text-slate-500 " />
                   Bộ lọc tìm kiếm
                 </h2>
-                <button className="text-sm font-medium text-zinc-300 hover:text-primary hover:font-bold">
+                <button
+                  onClick={handleResetFilters}
+                  className="text-sm font-medium text-zinc-400 hover:text-primary transition-colors cursor-pointer"
+                >
                   Đặt lại
                 </button>
               </div>
@@ -244,90 +342,167 @@ export default function DestinationPage({ params }: PageProps) {
                   <CustomSelect
                     options={allDestinations}
                     placeholder="Chọn điểm đến"
-                    onChange={(val) => {
-                      if (val) {
-                        router.push(`/destination/${val.id}`);
-                      }
-                    }}
+                    multiple={true}
+                    value={selectedDestinations}
+                    onChange={(val) => setSelectedDestinations(val || [])}
                   />
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="mb-1.5 block text-sm font-semibold font-sans text-text-secondary  tracking-wider">
                     Điểm tham quan
                   </label>
                   <CustomSelect
                     options={attractionOptions}
                     placeholder="Chọn điểm tham quan"
-                    onChange={(val) => console.log("Selected attr:", val)}
                   />
-                </div>
+                </div> */}
 
-                <div className="pt-2">
+
+                <div className="pt-2 border-t border-slate-100">
                   <label className="mb-2 block text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Dòng tour
                   </label>
                   <div className="space-y-2.5">
-                    {["Giá Tốt", "Tiêu chuẩn"].map((label) => (
-                      <label
-                        key={label}
-                        className="flex items-center justify-between cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="text-sm font-medium text-slate-700">
-                            {label}
+                    {categories.map((cate) => {
+                      const isChecked = selectedCategoryIds.includes(cate.id);
+                      const tourCount = getCategoryTourCount(cate.id);
+                      return (
+                        <label
+                          key={cate.id}
+                          className="flex items-center justify-between cursor-pointer group"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {
+                                if (isChecked) {
+                                  setSelectedCategoryIds(selectedCategoryIds.filter(id => id !== cate.id));
+                                } else {
+                                  setSelectedCategoryIds([...selectedCategoryIds, cate.id]);
+                                }
+                              }}
+                              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            />
+                            <span className={`text-sm ${isChecked ? "font-semibold text-primary" : "font-medium text-slate-700"} group-hover:text-primary transition-colors`}>
+                              {cate.name}
+                            </span>
+                          </div>
+                          <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors ${isChecked ? "bg-primary text-white" : "bg-slate-100 text-slate-500"
+                            }`}>
+                            {tourCount}
                           </span>
-                        </div>
-                        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500">
-                          13
-                        </span>
-                      </label>
-                    ))}
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
+                {/* Ngân sách */}
+                <div className="pt-2 border-t border-slate-100 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsPriceExpanded(!isPriceExpanded)}
+                    className="flex w-full items-center justify-between font-semibold font-sans text-sm text-text-secondary tracking-wider cursor-pointer"
+                  >
+                    <span>Ngân sách</span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-slate-500 transition-transform duration-200 ${isPriceExpanded ? "rotate-180" : ""
+                        }`}
+                    />
+                  </button>
+
+                  {isPriceExpanded && (
+                    <div className="mt-2 transition-all duration-300">
+                      <PriceRangeSlider
+                        min={minLimitPrice}
+                        max={maxLimitPrice}
+                        step={10000}
+                        value={priceRange}
+                        onChange={(val) => setPriceRange(val)}
+                      />
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
+
           </aside>
 
           {/* RESULTS */}
           <section className="lg:col-span-3">
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-slate-500 text-sm">
+              <p className="text-text-primary text-base">
                 Kết quả:{" "}
                 <span className="font-bold text-slate-900 text-lg">
-                  {tours.length}
+                  {filteredTours.length}
                 </span>{" "}
                 chương trình tour
               </p>
 
-              <div className="flex items-center gap-4 self-end sm:self-auto">
-                <div className="flex items-center gap-2 bg-white border border-slate-200 p-1.5 rounded-xl shadow-sm">
-                  <button className="rounded-lg bg-slate-100 p-1.5 text-blue-600">
-                    <Grid className="h-4 w-4" />
+              <div className="flex items-center font-sans text-base font-normal gap-2.5 self-end sm:self-auto">
+                <span className="text-slate-500 text-sm">sắp xếp theo:</span>
+                <div className="relative" ref={sortRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsSortOpen(!isSortOpen)}
+                    className="flex items-center justify-between gap-2.5 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 border border-slate-200 outline-none cursor-pointer shadow-xs hover:border-slate-300 transition-all select-none"
+                  >
+                    <span>
+                      {sortBy === "price-asc"
+                        ? "Giá từ thấp đến cao"
+                        : sortBy === "price-desc"
+                          ? "Giá từ cao đến thấp"
+                          : "Ngày khởi hành gần nhất"}
+                    </span>
+                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""}`} />
                   </button>
-                  <button className="rounded-lg p-1.5 text-slate-400 hover:text-slate-600">
-                    <List className="h-4 w-4" />
-                  </button>
-                </div>
 
-                <select className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 outline-none shadow-sm cursor-pointer">
-                  <option>Ngày khởi hành gần nhất</option>
-                  <option>Giá từ thấp đến cao</option>
-                  <option>Giá từ cao đến thấp</option>
-                </select>
+                  <AnimatePresence>
+                    {isSortOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="absolute right-0 mt-2 w-48 rounded-2xl bg-white border border-slate-100 shadow-xl py-2 z-110 overflow-hidden"
+                      >
+                        {[
+                          // { value: "nearest", label: "Ngày khởi hành gần nhất" },
+                          { value: "price-asc", label: "Giá từ thấp đến cao" },
+                          { value: "price-desc", label: "Giá từ cao đến thấp" },
+                        ].map((opt) => {
+                          const isActive = sortBy === opt.value;
+                          return (
+                            <div
+                              key={opt.value}
+                              onClick={() => {
+                                setSortBy(opt.value);
+                                setIsSortOpen(false);
+                              }}
+                              className={`px-4 py-3 text-sm cursor-pointer flex items-center justify-between transition-colors ${isActive
+                                ? "bg-slate-50 text-primary font-bold"
+                                : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                                }`}
+                            >
+                              <span>{opt.label}</span>
+                            </div>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {tours.map((tour) => (
+              {sortedTours.map((tour) => (
                 <TourCard
                   key={tour.id}
                   image={`/images/${tour.image}`}
-                  category={tour.categories.name}
+                  category={tour.categories?.name || ""}
                   title={tour.name}
                   duration={tour.duration}
                   price={tour.price}
@@ -336,7 +511,9 @@ export default function DestinationPage({ params }: PageProps) {
                 />
               ))}
             </div>
+
           </section>
+
         </div>
       </main>
     </div>

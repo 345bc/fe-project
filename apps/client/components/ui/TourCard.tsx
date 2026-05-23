@@ -35,13 +35,13 @@ const TourCard = ({
       <div className="bg-ghostwhite w-full flex items-center  h-[250px] "></div>
       <div className="p-5 flex flex-col flex-1 w-[95%] bg-surface rounded-2xl absolute bottom-2">
         <div className="flex justify-between items-center mb-3 text-text-secondary  font-semibold font-sans tracking-tight text-base">
-          <small className="flex items-center gap-1 ">
-            <span className="material-symbols-outlined  ">sell</span>
-            {category}
+          <small className="flex items-center gap-1 whitespace-nowrap truncate max-w-[50%] shrink-0">
+            <span className="material-symbols-outlined shrink-0">sell</span>
+            <span className="truncate">{category}</span>
           </small>
-          <small className="flex items-center gap-1 ">
-            <span className="material-symbols-outlined  ">schedule</span>
-            {duration}
+          <small className="flex items-center gap-1 whitespace-nowrap truncate max-w-[50%] shrink-0">
+            <span className="material-symbols-outlined shrink-0">schedule</span>
+            <span className="truncate">{duration}</span>
           </small>
         </div>
 

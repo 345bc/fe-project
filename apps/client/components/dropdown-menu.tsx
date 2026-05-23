@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import Dropdown from "./abc";
+import Dropdown from "./drop-down";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,13 +10,11 @@ export default function DropdownMenu() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Đóng dropdown khi bắt đầu chuyển trang
   useEffect(() => {
     const handleRouteChange = () => {
       setIsOpen(false);
     };
 
-    // Next.js App Router không có router.events, dùng pathname effect
     setIsOpen(false);
   }, [pathname]);
 
@@ -36,17 +35,25 @@ export default function DropdownMenu() {
     <div className="relative transition-colors duration-500" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative uppercase group hover:text-blue-500"
+        className={`relative uppercase group hover:text-blue-500 ${isOpen?"text-blue-500":""}`}
       >
         Điểm đến
-        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
+        <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full ${isOpen?"bg-blue-500 w-full":""}`}></span>
       </button>
 
-      {isOpen && (
-        <div className="fixed top-18 left-0 w-screen border-zinc-400/50 z-50">
-          <Dropdown />
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -12, scale: 0.99 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.99 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="fixed top-17 left-0 w-screen z-50 overflow-hidden"
+          >
+            <Dropdown />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

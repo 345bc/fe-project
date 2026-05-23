@@ -48,7 +48,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-surface text-on-surface font-body antialiased">
+      <body className=" text-on-surface font-body antialiased">
         {/* Nav */}
         <NavbarMain />
 
