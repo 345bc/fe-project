@@ -26,7 +26,7 @@ const patternHandlers: Record<
   },
 };
 
-export default function Breadcrumb() {
+export default function Breadcrumb({ classname }: { classname?: string }) {
   const pathname = usePathname();
   const [dynamicNames, setDynamicNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -130,22 +130,22 @@ export default function Breadcrumb() {
       <ol className="flex items-center flex-wrap gap-1">
         {breadcrumbs.map((item, index) => (
           <Fragment key={item.href}>
-            <li>
+            <li className={`${classname}`}>
               {item.isCurrent ? (
-                <span className="text-surface font-bold text-sm tracking-tight">
+                <span className=" font-bold text-sm tracking-tight">
                   {item.label}
                 </span>
               ) : (
                 <Link
                   href={item.href}
-                  className="text-surface font-bold  text-sm tracking-tight hover:underline hover:text-blue-400 transition-colors duration-100"
+                  className=" font-bold  text-sm tracking-tight hover:underline hover:text-blue-400 transition-colors duration-100"
                 >
                   {item.label}
                 </Link>
               )}
             </li>
             {index < breadcrumbs.length - 1 && (
-              <li className="text-surface text-sm select-none">/</li>
+              <li className=" text-sm select-none">/</li>
             )}
           </Fragment>
         ))}

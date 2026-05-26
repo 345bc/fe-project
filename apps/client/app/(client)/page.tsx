@@ -16,10 +16,10 @@ export default function HomePage() {
         {/* Background Banner */}
         <div className="relative w-full h-[260px] md:h-[420px] ">
           <Image
-            src="/images/demo_banner.jpg"
-            alt="banner"
+            src="/images/abc-vector.jpg"
+            alt="ZTravel Marketing Banner"
             fill
-            className="object-cover object-center"
+            className="object-fill"
             priority
           />
         </div>
@@ -28,7 +28,13 @@ export default function HomePage() {
         <SearchBar />
       </header>
       <div className="h-28"></div>
-      <HeroSlider />
+      <HeroSlider
+        images={[
+          "/images/slider-1-clean.jpg",
+          "/images/slider-2-clean.jpg",
+          "/images/slider-3-clean.jpg",
+        ]}
+      />
       <div className="h-28"></div>
       {/* <CategoryCardSection /> */}
       <section className="wrapper-surface">

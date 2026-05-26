@@ -45,7 +45,7 @@ const TourCard = ({
           </small>
         </div>
 
-        <h5 className="font-semibold tracking-tight text-xl  mb-2  leading-normal group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.4em]">
+        <h5 className="font-semibold tracking-tight text-xl  mb-2   group-hover:text-primary transition-colors duration-300 line-clamp-2  h-[2.5em]">
           {title}
         </h5>
 

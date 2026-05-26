@@ -27,7 +27,7 @@ export type Tours = {
   };
 };
 
-const baseURL = "http://localhost:8080";
+// const baseURL = "http://localhost:8080";
 export default function TourSection() {
   const [tours, setTours] = useState<Tours[]>([]);
   const [loading, setLoading] = useState(true);

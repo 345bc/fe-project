@@ -75,6 +75,7 @@ export default function DestinationPage({ params }: PageProps) {
   const id = parseInt(rawId);
   const [destination, setDestination] = useState<Destinations | null>(null);
   const [tours, setTours] = useState<Tours[]>([]);
+  const [sortBy, setSortBy] = useState("");
   const [loading, setLoading] = useState(true);
   const [allDestinations, setAllDestinations] = useState<Option[]>([]);
   const [selectedDestinations, setSelectedDestinations] = useState<Option[]>([]);
@@ -85,10 +86,24 @@ export default function DestinationPage({ params }: PageProps) {
   const [maxLimitPrice, setMaxLimitPrice] = useState(50000000);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
   const [isPriceExpanded, setIsPriceExpanded] = useState(true);
-  const [sortBy, setSortBy] = useState<string>("nearest");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        setLoading(true);
+        const data = await tourService.getTours(sortBy);
+        setTours(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTours();
+  }, [sortBy]);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -146,7 +161,6 @@ export default function DestinationPage({ params }: PageProps) {
     fetchData();
   }, [id]);
 
-  const [isEsgActive, setIsEsgActive] = useState(false);
 
   if (loading)
     return (
@@ -187,15 +201,6 @@ export default function DestinationPage({ params }: PageProps) {
     }).length;
   };
 
-  const sortedTours = [...filteredTours].sort((a, b) => {
-    if (sortBy === "price-asc") {
-      return a.price - b.price;
-    }
-    if (sortBy === "price-desc") {
-      return b.price - a.price;
-    }
-    return b.id - a.id; // "nearest" -> newest added tours first
-  });
 
   const handleResetFilters = () => {
     if (destination) {
@@ -222,7 +227,7 @@ export default function DestinationPage({ params }: PageProps) {
         />
         <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-transparent to-transparent" />
         <div className="relative mx-auto flex h-full container-main flex-col justify-between px-4 py-8 md:px-6">
-          <Breadcrumb />
+          <Breadcrumb classname="text-surface" />
           <div className="mb-4 max-w-full flex flex-col items-center">
             <h1 className="mb-4 text-center text-4xl font-extrabold tracking-wide uppercase md:text-5xl lg:text-4xl">
               {destination?.name}
@@ -234,6 +239,7 @@ export default function DestinationPage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
 
       {/* MAIN CONTENT */}
       <main className="container-main md:pb-40 md:px-6">
@@ -293,6 +299,7 @@ export default function DestinationPage({ params }: PageProps) {
 
         {/* 3. SIDEBAR + RESULTS */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+
           {/* SIDEBAR */}
           <aside className="space-y-6 lg:col-span-1 lg:sticky lg:top-32 self-start hidden md:block">
             <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
@@ -450,11 +457,11 @@ export default function DestinationPage({ params }: PageProps) {
                     className="flex items-center justify-between gap-2.5 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 border border-slate-200 outline-none cursor-pointer shadow-xs hover:border-slate-300 transition-all select-none"
                   >
                     <span>
-                      {sortBy === "price-asc"
+                      {sortBy === "price,asc"
                         ? "Giá từ thấp đến cao"
-                        : sortBy === "price-desc"
+                        : sortBy === "price,desc"
                           ? "Giá từ cao đến thấp"
-                          : "Ngày khởi hành gần nhất"}
+                          : "Mặc định"}
                     </span>
                     <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""}`} />
                   </button>
@@ -469,9 +476,8 @@ export default function DestinationPage({ params }: PageProps) {
                         className="absolute right-0 mt-2 w-48 rounded-2xl bg-white border border-slate-100 shadow-xl py-2 z-110 overflow-hidden"
                       >
                         {[
-                          // { value: "nearest", label: "Ngày khởi hành gần nhất" },
-                          { value: "price-asc", label: "Giá từ thấp đến cao" },
-                          { value: "price-desc", label: "Giá từ cao đến thấp" },
+                          { value: "price,asc", label: "Giá từ thấp đến cao" },
+                          { value: "price,desc", label: "Giá từ cao đến thấp" },
                         ].map((opt) => {
                           const isActive = sortBy === opt.value;
                           return (
@@ -498,7 +504,7 @@ export default function DestinationPage({ params }: PageProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {sortedTours.map((tour) => (
+              {tours.map((tour) => (
                 <TourCard
                   key={tour.id}
                   image={`/images/${tour.image}`}
@@ -515,7 +521,7 @@ export default function DestinationPage({ params }: PageProps) {
           </section>
 
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
