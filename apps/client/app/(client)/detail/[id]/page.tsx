@@ -9,11 +9,16 @@ import {
   Car, Wifi, ShieldPlus, Hotel
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import tourDetailService from "@/services/tour_detail-service";
 import Breadcrumb from "@/components/ui/breadcum";
 import Image from "next/image";
 import ItinerarySection from "@/components/itinerary-section";
 import RuleAndNoteSection from "@/components/RuleAndNoteSection";
+import InformationSecion from "@/components/detail-page/trip-information";
+import { Tours } from "@/components/tour-section";
+import ServiceSection, { ServiceItems } from "@/components/detail-page/service-section";
+import tourService from "@/services/tour-service";
 
 // Define TypeScript interfaces matching the API structure
 interface DestinationGroup {
@@ -68,6 +73,51 @@ interface TourDetailData {
   status: string;
 }
 
+
+interface TourDetailItems {
+  id: number,
+  uuid: string,
+  tour: {
+    id: number,
+    name: string,
+    price: number,
+    status: string,
+    duration: string,
+    destination: {
+      id: number,
+      name: string,
+      image: string,
+      introduce: string,
+      destinationGroup: {
+        id: number,
+        name: string,
+        created_at: string,
+        updated_at: string
+      }
+    },
+    categories: {
+      id: number,
+      name: string,
+      introduce: string,
+      image: string
+    },
+    image: string,
+    description: string,
+    transports: {
+      id: number,
+      name: string
+    }
+  },
+  image: string,
+  departurePlace: string,
+  departureDate: string,
+  seatsAvailable: number,
+  maxSeats: number,
+  status: string
+}
+
+
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -104,48 +154,23 @@ const parseItinerary = (itineraryStr: string) => {
 
 
 
-const additionalServices = [
-  {
-    id: 1,
-    name: "Xe đưa đón sân bay 2 chiều",
-    description: "Xe riêng đón tiễn từ nhà đến sân bay và ngược lại, xe đời mới rộng rãi, lái xe chuyên nghiệp.",
-    price: 500000,
-    icon: Car
-  },
-  {
-    id: 2,
-    name: "Nâng cấp khách sạn 4 sao",
-    description: "Nâng cấp hạng phòng lên tiêu chuẩn 4 sao sang trọng, bao gồm ăn sáng buffet và hồ bơi vô cực.",
-    price: 1200000,
-    icon: Hotel
-  },
-  {
-    id: 3,
-    name: "Bảo hiểm du lịch mở rộng",
-    description: "Tăng mức bồi thường bảo hiểm lên tối đa 500.000.000đ/vụ cùng hỗ trợ y tế khẩn cấp 24/7.",
-    price: 150000,
-    icon: ShieldPlus
-  },
-  {
-    id: 4,
-    name: "Sim data 4G & Thiết bị phát Wifi",
-    description: "Sim 4G tốc độ cao không giới hạn dung lượng, nhận sim ngay tại sân bay ga đi.",
-    price: 200000,
-    icon: Wifi
-  }
-];
+
 
 export default function TourDetail({ params }: PageProps) {
   const { id: rawId } = use(params);
   const id = parseInt(rawId);
+  const searchParams = useSearchParams();
+  const detailIdParam = searchParams.get("detailId");
 
   const [detail, setDetail] = useState<TourDetailData | null>(null);
+  const [tours, setTours] = useState<Tours[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [activeThumb, setActiveThumb] = useState<string>("");
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [services, setServices] = useState<ServiceItems[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggleService = (serviceId: number) => {
@@ -155,6 +180,17 @@ export default function TourDetail({ params }: PageProps) {
         : [...prev, serviceId]
     );
   };
+
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      const data = await tourService.getToursRelated(id);
+      setTours(data);
+      setLoading(false);
+    };
+    fetchTours();
+  }, [id]);
+
 
   useEffect(() => {
     const fetchDetailData = async () => {
@@ -168,24 +204,21 @@ export default function TourDetail({ params }: PageProps) {
         setLoading(true);
         setError(null);
 
-        // Attempt 1: Fetch by direct Tour Detail ID
-        try {
-          const detailData = await tourDetailService.getTourDetailById(id);
-          if (detailData) {
-            setDetail(detailData);
-            setActiveThumb(getImageUrl(detailData.image || detailData.tour?.image));
-            setLoading(false);
-            return;
-          }
-        } catch (e) {
-          console.log("Direct detail fetch failed, fallback to tourId query...");
-        }
-
-        // Attempt 2: Fetch by Tour ID (since homepage lists tours and links using tourId)
+        // Fetch details by Tour ID (since URL path parameter is always the Tour ID)
         const detailArray = await tourDetailService.getTourDetailByTourId(id);
         if (detailArray && Array.isArray(detailArray) && detailArray.length > 0) {
-          setDetail(detailArray[0]);
-          setActiveThumb(getImageUrl(detailArray[0].image || detailArray[0].tour?.image));
+          // If a specific detailId is provided in the query params, find it
+          let selectedDetail = detailArray[0];
+          if (detailIdParam) {
+            const parsedDetailId = parseInt(detailIdParam);
+            const foundDetail = detailArray.find(d => d.id === parsedDetailId);
+            if (foundDetail) {
+              selectedDetail = foundDetail;
+            }
+          }
+
+          setDetail(selectedDetail);
+          setActiveThumb(getImageUrl(selectedDetail.image || selectedDetail.tour?.image));
         } else {
           setError("Không tìm thấy thông tin hành trình chi tiết cho tour này.");
         }
@@ -198,7 +231,7 @@ export default function TourDetail({ params }: PageProps) {
     };
 
     fetchDetailData();
-  }, [id]);
+  }, [id, detailIdParam]);
 
   const toggleAccordion = (index: number) => {
     setOpenAccordion(openAccordion === index ? null : index);
@@ -297,7 +330,7 @@ export default function TourDetail({ params }: PageProps) {
   const seatsLeft = detail.seatsAvailable;
   const isFullyBooked = seatsLeft <= 0;
 
-  const addOnTotal = additionalServices
+  const addOnTotal = services
     .filter(s => selectedServices.includes(s.id))
     .reduce((sum, s) => sum + s.price, 0);
   const finalPrice = price + addOnTotal;
@@ -305,8 +338,8 @@ export default function TourDetail({ params }: PageProps) {
 
 
   return (
-    <div className="min-h-screen bg-light  font-sans antialiased pt-4 text-primary">
-      <div className="container-main space-y-6">
+    <div className="min-h-screen bg-light  font-sans  pt-4  text-primary ">
+      <div className="container-main space-y-6  md:pb-40">
         {/* Dynamic Breadcrumbs */}
         <Breadcrumb classname="text-text-secondary py-4 " />
 
@@ -317,11 +350,12 @@ export default function TourDetail({ params }: PageProps) {
           </h1>
         </div>
 
+
         {/* Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* Left Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-16 ">
 
             {/* Gallery Card */}
             <div className="bg-surface p-4 rounded-3xl shadow-xs  space-y-4">
@@ -385,71 +419,7 @@ export default function TourDetail({ params }: PageProps) {
               <h2 className="text-lg md:text-xl font-bold text-text-primary flex items-center gap-2">
                 <div className="text-primary" /> Thông tin về chuyến đi
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-100/80 shadow-xs flex items-start gap-3.5 hover:shadow-md transition duration-200">
-                  <div className="p-2 rounded-xl bg-sky-50 text-sky-500 shrink-0">
-                    <MapPin size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Điểm tham quan</h4>
-                    <p className="text-sm font-bold text-slate-700">{destination?.name}</p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-100/80 shadow-xs flex items-start gap-3.5 hover:shadow-md transition duration-200">
-                  <div className="p-2 rounded-xl bg-violet-50 text-violet-500 shrink-0">
-                    <Clock size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Thời gian</h4>
-                    <p className="text-sm font-bold text-slate-700">{tour.duration}</p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-100/80 shadow-xs flex items-start gap-3.5 hover:shadow-md transition duration-200">
-                  <div className="p-2 rounded-xl bg-blue-50 text-blue-500 shrink-0">
-                    <Plane size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Phương tiện</h4>
-                    <p className="text-sm font-bold text-slate-700">{transport?.name || "Xe du lịch"}</p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-100/80 shadow-xs flex items-start gap-3.5 hover:shadow-md transition duration-200">
-                  <div className="p-2 rounded-xl bg-orange-50 text-orange-500 shrink-0">
-                    <MapPin size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Nơi khởi hành</h4>
-                    <p className="text-sm font-bold text-slate-700">{detail.departurePlace}</p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-100/80 shadow-xs flex items-start gap-3.5 hover:shadow-md transition duration-200">
-                  <div className="p-2 rounded-xl bg-pink-50 text-pink-500 shrink-0">
-                    <Calendar size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Ngày khởi hành</h4>
-                    <p className="text-sm font-bold text-slate-700">{detail.departureDate}</p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-100/80 shadow-xs flex items-start gap-3.5 hover:shadow-md transition duration-200">
-                  <div className={`p-2 rounded-xl shrink-0 ${isFullyBooked ? "bg-rose-50 text-rose-500" : "bg-emerald-50 text-emerald-500"}`}>
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Tình trạng chỗ</h4>
-                    <p className={`text-sm font-bold ${isFullyBooked ? "text-rose-600" : "text-emerald-600"}`}>
-                      {isFullyBooked ? "Hết chỗ" : `Còn ${seatsLeft} / ${detail.maxSeats}`}
-                    </p>
-                  </div>
-                </div>
-
-              </div>
+              <InformationSecion id={detail.id} tour_id={tour.id} />
             </div>
 
             {/* Tour Description */}
@@ -487,178 +457,124 @@ export default function TourDetail({ params }: PageProps) {
               </h2>
               <RuleAndNoteSection />
             </div>
-
-
-
-
-            {/* Additional Services Section (Sleek List Layout + iOS Switches) */}
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-xs space-y-5">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-50">
-                <div className="space-y-1">
-                  <h3 className="text-base md:text-lg font-extrabold text-slate-950 flex items-center gap-2">
-                    <Sparkles className="text-blue-500 animate-pulse" size={18} /> Nâng tầm trải nghiệm chuyến đi
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Tùy chọn các tiện ích chất lượng cao thiết kế riêng cho hành trình của bạn.
-                  </p>
-                </div>
-                <span className="text-xs font-semibold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-100/30 shrink-0">
-                  Tùy chọn
-                </span>
-              </div>
-
-              <div className="divide-y divide-slate-100">
-                {additionalServices.map((service) => {
-                  const isSelected = selectedServices.includes(service.id);
-                  const IconComponent = service.icon;
-                  return (
-                    <div
-                      key={service.id}
-                      onClick={() => handleToggleService(service.id)}
-                      className="flex items-center justify-between py-4 group cursor-pointer transition-colors duration-200 hover:bg-slate-50/50 px-2 -mx-2 rounded-2xl"
-                    >
-                      {/* Left side: Circular Icon & Description */}
-                      <div className="flex items-center gap-4 min-w-0 pr-4">
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${isSelected
-                          ? "bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-sm shadow-blue-200"
-                          : "bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500"
-                          }`}>
-                          <IconComponent size={20} />
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="text-sm md:text-base font-bold text-slate-800 transition-colors group-hover:text-blue-600">
-                            {service.name}
-                          </h4>
-                          <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 group-hover:text-slate-500 transition-colors text-justify">
-                            {service.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Right side: Price Add-on & iOS Toggle */}
-                      <div className="flex items-center gap-4 shrink-0">
-                        <div className="text-right">
-                          <span className="text-[10px] text-slate-400 block font-medium uppercase tracking-wider">Phụ phí</span>
-                          <span className="text-sm font-extrabold text-blue-600">+{formatPrice(service.price)}</span>
-                        </div>
-
-                        {/* iOS-style toggle */}
-                        <div className="relative inline-flex items-center select-none">
-                          <div className={`w-11 h-6 rounded-full transition-colors duration-300 relative ${isSelected ? "bg-blue-600" : "bg-slate-200"
-                            }`}>
-                            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-xs transition-transform duration-300 ${isSelected ? "translate-x-5" : "translate-x-0"
-                              } left-0.5`}></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="space-y-4">
+              <h2 className="text-lg md:text-xl font-bold font-sans text-text-primary flex items-center gap-2">
+                Dịch vụ cộng thêm
+              </h2>
+              <ServiceSection
+                selectedServices={selectedServices}
+                onToggleService={handleToggleService}
+                onServicesLoad={setServices}
+              />
             </div>
 
           </div>
 
           {/* Sticky Sidebar widget (Booking card) */}
-          <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-10 space-y-4">
-              <div className="bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-6 ">
-                {/* Price Details */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400 line-through">Giá cũ: {formatPrice(oldPrice + addOnTotal)}</span>
-                    <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-bold">Tiết kiệm {formatPrice(promoDiscount)}</span>
-                  </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-red-600 tracking-tight">{formatPrice(finalPrice)}</span>
-                    <span className="text-sm font-medium text-slate-400">/ khách</span>
+          <div className="lg:col-span-1 lg:sticky lg:top-32 self-start space-y-4">
+            <div className="bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-6 ">
+              {/* Price Details */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400 line-through">Giá cũ: {formatPrice(oldPrice + addOnTotal)}</span>
+                  <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-bold">Tiết kiệm {formatPrice(promoDiscount)}</span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-extrabold text-red-600 tracking-tight">{formatPrice(finalPrice)}</span>
+                  <span className="text-sm font-medium text-slate-400">/ khách</span>
+                </div>
+              </div>
+
+              {/* Selected Add-ons breakdown */}
+              {selectedServices.length > 0 && (
+                <div className="bg-slate-50 border border-slate-100/80 rounded-2xl p-3.5 space-y-2">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tiện ích chọn thêm:</div>
+                  <div className="space-y-1.5">
+                    {services
+                      .filter(s => selectedServices.includes(s.id))
+                      .map(service => (
+                        <div key={service.id} className="flex justify-between items-center text-xs">
+                          <span className="text-slate-600 font-medium truncate max-w-[160px]">{service.name}</span>
+                          <span className="text-slate-500 font-semibold shrink-0">+{formatPrice(service.price)}</span>
+                        </div>
+                      ))}
                   </div>
                 </div>
+              )}
 
-                {/* Selected Add-ons breakdown */}
-                {selectedServices.length > 0 && (
-                  <div className="bg-slate-50 border border-slate-100/80 rounded-2xl p-3.5 space-y-2">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tiện ích chọn thêm:</div>
-                    <div className="space-y-1.5">
-                      {additionalServices
-                        .filter(s => selectedServices.includes(s.id))
-                        .map(service => (
-                          <div key={service.id} className="flex justify-between items-center text-xs">
-                            <span className="text-slate-600 font-medium truncate max-w-[160px]">{service.name}</span>
-                            <span className="text-slate-500 font-semibold shrink-0">+{formatPrice(service.price)}</span>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
+              {/* Promo box
+              <div className="bg-orange-50/60 border border-orange-100 rounded-2xl p-4 flex gap-3">
+                <Gift className="text-orange-500 shrink-0 mt-0.5" size={18} />
+                <div className="text-xs text-orange-900 leading-relaxed">
+                  Đặt ngay hôm nay để được hưởng <strong>Ưu đãi hoàn vé lên tới 10%</strong> khi thanh toán bằng thẻ tín dụng đối tác.
+                </div>
+              </div> */}
 
-                {/* Promo box */}
-                <div className="bg-orange-50/60 border border-orange-100 rounded-2xl p-4 flex gap-3">
-                  <Gift className="text-orange-500 shrink-0 mt-0.5" size={18} />
-                  <div className="text-xs text-orange-900 leading-relaxed">
-                    Đặt ngay hôm nay để được hưởng <strong>Ưu đãi hoàn vé lên tới 10%</strong> khi thanh toán bằng thẻ tín dụng đối tác.
-                  </div>
+              {/* Metadata rows */}
+              <div className="border-t border-slate-100 pt-4 space-y-3.5 text-xs md:text-sm">
+
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-slate-400 flex items-center gap-2 shrink-0"><QrCode size={15} /> Mã tour:</span>
+                  <span className="font-semibold text-blue-600 break-all text-right select-all">{detail.uuid}</span>
                 </div>
 
-                {/* Metadata rows */}
-                <div className="border-t border-slate-100 pt-4 space-y-3.5 text-xs md:text-sm">
-
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-slate-400 flex items-center gap-2 shrink-0"><QrCode size={15} /> Mã tour:</span>
-                    <span className="font-semibold text-blue-600 break-all text-right select-all">{detail.uuid}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-400 flex items-center gap-2"><MapPin size={15} /> Điểm đi:</span>
-                    <span className="font-bold text-slate-700">{detail.departurePlace}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-400 flex items-center gap-2"><Calendar size={15} /> Ngày đi:</span>
-                    <span className="font-bold text-slate-700">{detail.departureDate}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-400 flex items-center gap-2"><Clock size={15} /> Thời lượng:</span>
-                    <span className="font-bold text-slate-700">{tour.duration}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-400 flex items-center gap-2"><Users size={15} /> Còn trống:</span>
-                    <span className={`font-bold ${isFullyBooked ? "text-red-600" : "text-emerald-600"}`}>
-                      {isFullyBooked ? "Đã hết chỗ" : `${seatsLeft} chỗ`}
-                    </span>
-                  </div>
-
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-2"><MapPin size={15} /> Điểm đi:</span>
+                  <span className="font-bold text-slate-700">{detail.departurePlace}</span>
                 </div>
 
-                {/* Buttons booking call */}
-                <div className="flex gap-3 pt-2">
-                  <a
-                    href="tel:19001800"
-                    className="w-12 h-12 bg-blue-50 text-blue-600 border border-blue-100 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition shrink-0 shadow-sm"
-                    title="Gọi hotline tư vấn miễn phí"
-                  >
-                    <Phone size={18} />
-                  </a>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-2"><Calendar size={15} /> Ngày đi:</span>
+                  <span className="font-bold text-slate-700">{detail.departureDate}</span>
+                </div>
 
-                  <button
-                    disabled={isFullyBooked}
-                    onClick={() => alert(`Đặt tour thành công!\nTổng giá trị: ${formatPrice(finalPrice)}` + (selectedServices.length > 0 ? `\nDịch vụ chọn thêm: ${additionalServices.filter(s => selectedServices.includes(s.id)).map(s => s.name).join(", ")}` : ""))}
-                    className={`flex-1 font-bold text-sm rounded-full transition-all duration-200 shadow-md ${isFullyBooked
-                      ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
-                      : "bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-100 active:scale-98"
-                      }`}
-                  >
-                    {isFullyBooked ? "Hết chỗ khởi hành" : "Đặt tour ngay"}
-                  </button>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-2"><Clock size={15} /> Thời lượng:</span>
+                  <span className="font-bold text-slate-700">{tour.duration}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-2"><Users size={15} /> Còn trống:</span>
+                  <span className={`font-bold ${isFullyBooked ? "text-red-600" : "text-emerald-600"}`}>
+                    {isFullyBooked ? "Đã hết chỗ" : `${seatsLeft} chỗ`}
+                  </span>
                 </div>
 
               </div>
-            </div>
-          </div>
-        </div>
 
+              {/* Buttons booking call */}
+              <div className="flex gap-3 pt-2">
+                <a
+                  href="tel:19001800"
+                  className="w-12 h-12 bg-blue-50 text-blue-600 border border-blue-100 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition shrink-0 shadow-sm"
+                  title="Gọi hotline tư vấn miễn phí"
+                >
+                  <Phone size={18} />
+                </a>
+
+                <button
+                  disabled={isFullyBooked}
+                  onClick={() => alert(`Đặt tour thành công!\nTổng giá trị: ${formatPrice(finalPrice)}` + (selectedServices.length > 0 ? `\nDịch vụ chọn thêm: ${services.filter(s => selectedServices.includes(s.id)).map(s => s.name).join(", ")}` : ""))}
+                  className={`flex-1 font-bold text-sm rounded-full transition-all duration-200 shadow-md ${isFullyBooked
+                    ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+                    : "bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-100 active:scale-98"
+                    }`}
+                >
+                  {isFullyBooked ? "Hết chỗ khởi hành" : "Đặt tour ngay"}
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+        <div className="space-y-4 font-sans pt-10">
+          <h2 className="text-lg md:text-xl font-bold text-text-primary flex items-center gap-2">
+            <div className="text-primary" /> Các chương trình khác
+          </h2>
+
+        </div>
       </div>
     </div>
   );

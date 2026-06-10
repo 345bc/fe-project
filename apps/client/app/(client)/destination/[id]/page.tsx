@@ -241,6 +241,8 @@ export default function DestinationPage({ params }: PageProps) {
       </section>
 
 
+
+
       {/* MAIN CONTENT */}
       <main className="container-main md:pb-40 md:px-6">
         {/* 2. FLOATING SEARCH BAR */}

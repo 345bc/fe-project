@@ -86,7 +86,7 @@ export default function Dropdown() {
                 <h4 className="text-sm font-bold tracking-tight  py-4 text-text-primary   normal-case ">
                   {region.name}
                 </h4>
-                <div className="flex flex-col  normal-case items-start">  
+                <div className="flex flex-col  normal-case items-start">
                   {(destinationsByGroup[region.id] ?? []).map((des) => (
                     <Link
                       key={des.id}

@@ -24,6 +24,7 @@ export default function HomePage() {
           />
         </div>
 
+
         {/* Search Bar Container */}
         <SearchBar />
       </header>
