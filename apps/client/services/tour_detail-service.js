@@ -37,6 +37,18 @@ const tourDetailService = {
             const message = e.response?.data?.message;
             throw new Error(message);
         }
+    },
+
+    async getSubImagesByTourDetailId(tourDetailId) {
+        try {
+            const res = await tokenBearer.get(`${baseURL}/sub-images/tour-details/${tourDetailId}`, {
+                withCredentials: true,
+            });
+            return res.data.data;
+        } catch (e) {
+            const message = e.response?.data?.message;
+            throw new Error(message);
+        }
     }
 };
 

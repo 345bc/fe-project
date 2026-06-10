@@ -4,7 +4,7 @@ import React, { useState, use, useEffect } from "react";
 import {
   MapPin, Utensils, Calendar, Plane, Gift,
   ChevronRight, ChevronDown, QrCode, Clock,
-  Users, Phone, Maximize2, ShieldAlert, Sparkles,
+  Users, Phone, Maximize2, ShieldAlert,
   ArrowLeft, Compass, Info, Check, ShieldCheck,
   Car, Wifi, ShieldPlus, Hotel
 } from "lucide-react";
@@ -16,9 +16,8 @@ import Image from "next/image";
 import ItinerarySection from "@/components/itinerary-section";
 import RuleAndNoteSection from "@/components/RuleAndNoteSection";
 import InformationSecion from "@/components/detail-page/trip-information";
-import { Tours } from "@/components/tour-section";
 import ServiceSection, { ServiceItems } from "@/components/detail-page/service-section";
-import tourService from "@/services/tour-service";
+import TourRelatedSection from "@/components/detail-page/tour-related-section";
 
 // Define TypeScript interfaces matching the API structure
 interface DestinationGroup {
@@ -163,7 +162,6 @@ export default function TourDetail({ params }: PageProps) {
   const detailIdParam = searchParams.get("detailId");
 
   const [detail, setDetail] = useState<TourDetailData | null>(null);
-  const [tours, setTours] = useState<Tours[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -172,6 +170,7 @@ export default function TourDetail({ params }: PageProps) {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [services, setServices] = useState<ServiceItems[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [subImages, setSubImages] = useState<any[]>([]);
 
   const handleToggleService = (serviceId: number) => {
     setSelectedServices(prev =>
@@ -180,16 +179,6 @@ export default function TourDetail({ params }: PageProps) {
         : [...prev, serviceId]
     );
   };
-
-
-  useEffect(() => {
-    const fetchTours = async () => {
-      const data = await tourService.getToursRelated(id);
-      setTours(data);
-      setLoading(false);
-    };
-    fetchTours();
-  }, [id]);
 
 
   useEffect(() => {
@@ -219,6 +208,14 @@ export default function TourDetail({ params }: PageProps) {
 
           setDetail(selectedDetail);
           setActiveThumb(getImageUrl(selectedDetail.image || selectedDetail.tour?.image));
+
+          // Fetch sub-images using SubImagesController via service
+          try {
+            const subImagesData = await tourDetailService.getSubImagesByTourDetailId(selectedDetail.id);
+            setSubImages(subImagesData || []);
+          } catch (subErr) {
+            console.error("Error loading sub images:", subErr);
+          }
         } else {
           setError("Không tìm thấy thông tin hành trình chi tiết cho tour này.");
         }
@@ -314,13 +311,11 @@ export default function TourDetail({ params }: PageProps) {
   const categories = tour.categories;
   const transport = tour.transports;
 
-  // // Build unique thumbnails list
-  // const thumbnails = Array.from(new Set([
-  //   getImageUrl(detail.image),
-  //   getImageUrl(detail.subImage),
-  //   getImageUrl(tour.image),
-  //   getImageUrl(destination?.image)
-  // ].filter(Boolean)));
+  // Build unique thumbnails list using subImages state populated from SubImagesController
+  const thumbnails = Array.from(new Set([
+    getImageUrl(detail.image || tour.image),
+    ...subImages.map((img) => getImageUrl(img.subImage))
+  ].filter(Boolean)));
 
 
   // Marketing pricing details
@@ -399,7 +394,7 @@ export default function TourDetail({ params }: PageProps) {
               )}
 
               {/* Thumbnails list */}
-              {/* <div className="flex justify-center gap-3 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex justify-center gap-3 overflow-x-auto pb-1 scrollbar-none">
                 {thumbnails.map((thumb, index) => (
                   <img
                     key={index}
@@ -412,7 +407,7 @@ export default function TourDetail({ params }: PageProps) {
                     onClick={() => setActiveThumb(thumb)}
                   />
                 ))}
-              </div> */}
+              </div>
             </div>
 
             <div className="space-y-4 font-sans">
@@ -471,17 +466,13 @@ export default function TourDetail({ params }: PageProps) {
           </div>
 
           {/* Sticky Sidebar widget (Booking card) */}
-          <div className="lg:col-span-1 lg:sticky lg:top-32 self-start space-y-4">
+          <div className="lg:col-span-1 lg:sticky lg:top-26 self-start space-y-4">
             <div className="bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-6 ">
               {/* Price Details */}
               <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400 line-through">Giá cũ: {formatPrice(oldPrice + addOnTotal)}</span>
-                  <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-bold">Tiết kiệm {formatPrice(promoDiscount)}</span>
-                </div>
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-baseline gap-1 font-bold text-primary font-sans">
+                  Giá từ:
                   <span className="text-3xl font-extrabold text-red-600 tracking-tight">{formatPrice(finalPrice)}</span>
-                  <span className="text-sm font-medium text-slate-400">/ khách</span>
                 </div>
               </div>
 
@@ -511,30 +502,15 @@ export default function TourDetail({ params }: PageProps) {
               </div> */}
 
               {/* Metadata rows */}
-              <div className="border-t border-slate-100 pt-4 space-y-3.5 text-xs md:text-sm">
+              <div className="border-t border-slate-100 pt-4 space-y-3.5 text-xs md:text-sm font-sans font-bold text-primary">
 
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-slate-400 flex items-center gap-2 shrink-0"><QrCode size={15} /> Mã tour:</span>
+                <div className="flex items-center justify-between gap-4 truncate">
+                  <span className=" flex items-center gap-2 shrink-0"><QrCode size={15} /> Mã tour:</span>
                   <span className="font-semibold text-blue-600 break-all text-right select-all">{detail.uuid}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400 flex items-center gap-2"><MapPin size={15} /> Điểm đi:</span>
-                  <span className="font-bold text-slate-700">{detail.departurePlace}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-400 flex items-center gap-2"><Calendar size={15} /> Ngày đi:</span>
-                  <span className="font-bold text-slate-700">{detail.departureDate}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-400 flex items-center gap-2"><Clock size={15} /> Thời lượng:</span>
-                  <span className="font-bold text-slate-700">{tour.duration}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-400 flex items-center gap-2"><Users size={15} /> Còn trống:</span>
+                  <span className=" flex items-center gap-2"><Users size={15} /> Còn trống:</span>
                   <span className={`font-bold ${isFullyBooked ? "text-red-600" : "text-emerald-600"}`}>
                     {isFullyBooked ? "Đã hết chỗ" : `${seatsLeft} chỗ`}
                   </span>
@@ -573,7 +549,7 @@ export default function TourDetail({ params }: PageProps) {
           <h2 className="text-lg md:text-xl font-bold text-text-primary flex items-center gap-2">
             <div className="text-primary" /> Các chương trình khác
           </h2>
-
+          <TourRelatedSection tourId={id} />
         </div>
       </div>
     </div>
