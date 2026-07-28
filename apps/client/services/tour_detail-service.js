@@ -46,7 +46,7 @@ const tourDetailService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Failed to fetch sub-images";
             throw new Error(message);
         }
     }
