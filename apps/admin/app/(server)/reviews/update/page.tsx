@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import reviewService from "@/services/review-service";
 
-export default function UpdateReviewPage() {
+function UpdateReviewPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reviewId = searchParams.get("id");
@@ -62,5 +62,13 @@ export default function UpdateReviewPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function UpdateReviewPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-500">Đang tải...</div>}>
+      <UpdateReviewPageContent />
+    </Suspense>
   );
 }

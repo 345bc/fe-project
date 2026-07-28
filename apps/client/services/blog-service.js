@@ -10,7 +10,7 @@ const blogService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Không thể tải tin tức/blog";
             throw new Error(message);
         }
     },

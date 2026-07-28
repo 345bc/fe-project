@@ -1,13 +1,108 @@
 // apps/admin/app/page.tsx
-import Field from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  let data = {
+    revenue: 0,
+    bookingsCount: 0,
+    usersCount: 0,
+    toursCount: 0,
+    reviewsCount: 0,
+    recentBookings: [] as any[],
+    recentReviews: [] as any[],
+    chartData: [] as { label: string; value: number }[],
+  };
+  let error = null;
+
+  try {
+    const cookieStore = cookies();
+    const token = (await cookieStore).get("access_token")?.value;
+
+    if (!token) {
+      redirect("/sign-in");
+    }
+
+    const [bookingsRes, usersRes, toursRes, reviewsRes] = await Promise.all([
+      fetch("http://localhost:8080/bookings", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      }).then((r) => (r.ok ? r.json() : null)),
+      fetch("http://localhost:8080/users", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      }).then((r) => (r.ok ? r.json() : null)),
+      fetch("http://localhost:8080/tours", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      }).then((r) => (r.ok ? r.json() : null)),
+      fetch("http://localhost:8080/reviews", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      }).then((r) => (r.ok ? r.json() : null)),
+    ]);
+
+    const bookings = bookingsRes?.data || [];
+    const users = usersRes?.data || [];
+    const tours = toursRes?.data || [];
+    const reviews = reviewsRes?.data || [];
+
+    data.bookingsCount = bookings.length;
+    data.usersCount = users.length;
+    data.toursCount = tours.length;
+    data.reviewsCount = reviews.length;
+
+    // Calculate total revenue from CONFIRMED or COMPLETED bookings
+    const successfulBookings = bookings.filter(
+      (b: any) => b.status === "CONFIRMED" || b.status === "COMPLETED"
+    );
+    data.revenue = successfulBookings.reduce(
+      (sum: number, b: any) => sum + Number(b.total_amount || 0),
+      0
+    );
+
+    // Recent bookings (last 5)
+    data.recentBookings = [...bookings]
+      .sort((a, b) => (b.id || 0) - (a.id || 0))
+      .slice(0, 5);
+
+    // Recent reviews (last 4)
+    data.recentReviews = [...reviews]
+      .sort((a, b) => (b.id || 0) - (a.id || 0))
+      .slice(0, 4);
+
+    // Prepare chart data (last 7 successful bookings)
+    const chartBookings = [...successfulBookings]
+      .sort((a, b) => (a.id || 0) - (b.id || 0))
+      .slice(-7);
+    data.chartData = chartBookings.map((b: any) => ({
+      label: `Đơn #${b.id}`,
+      value: Number(b.total_amount || 0),
+    }));
+  } catch (err: any) {
+    if (err?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw err;
+    }
+    error =
+      err instanceof Error ? err.message : "Không thể tải dữ liệu thống kê";
+  }
+
+  // Calculate coordinates for SVG chart
+  const maxVal = Math.max(...data.chartData.map((d) => d.value), 1000000);
+  const points = data.chartData.map((d, i) => {
+    const x = 50 + i * 95;
+    // Calculate Y where 240 is chart height baseline and y=40 is top edge
+    const y = 240 - (d.value / maxVal) * 180;
+    return { x, y };
+  });
+  const firstPoint = points[0];
+  const lastPoint = points[points.length - 1];
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 bg-gradient-to-r from-gray-900 to-gray-800 p-8 rounded-2xl shadow-xl text-white relative overflow-hidden">
-        {/* Abstract background shapes */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-gradient-to-r from-gray-900 to-gray-800 p-8 rounded-2xl shadow-xl text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-white/5 blur-3xl"></div>
         <div className="absolute bottom-0 right-32 mb-8 w-32 h-32 rounded-full bg-blue-500/20 blur-2xl"></div>
 
@@ -16,106 +111,58 @@ export default function AdminDashboard() {
             Tổng quan hệ thống
           </h1>
           <p className="text-gray-300 font-medium">
-            Chào mừng trở lại! Dưới đây là thống kê chi tiết hôm nay.
+            Chào mừng trở lại! Dưới đây là thống kê chi tiết từ cơ sở dữ liệu.
           </p>
-        </div>
-        <Input type="text" placeholder="Filter by id" />
-        <input type="" />
-        <div className="relative z-10">
-          <button className="group relative inline-flex items-center justify-center px-6 py-2.5 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 shadow-lg shadow-blue-500/30 overflow-hidden">
-            <span className="relative z-10 flex items-center gap-2">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" x2="12" y1="15" y2="3" />
-              </svg>
-              Xuất báo cáo
-            </span>
-            <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-          </button>
         </div>
       </div>
 
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <p className="font-medium">Lỗi kết nối cơ sở dữ liệu</p>
+          <p className="mt-1 text-red-600">{error}</p>
+          <p className="mt-1 text-xs text-red-500">
+            Kiểm tra trạng thái chạy của backend tại http://localhost:8080
+          </p>
+        </div>
+      )}
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Card 1 */}
+        {/* Doanh thu */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">
-                Doanh thu
-              </p>
+              <p className="text-sm font-medium text-gray-500 mb-1">Doanh thu thực tế</p>
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                125.000.000đ
+                {data.revenue.toLocaleString("vi-VN")}₫
               </h3>
             </div>
             <div className="p-3 bg-green-50 rounded-xl text-green-600 group-hover:scale-110 transition-transform duration-300">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" x2="12" y1="2" y2="22" />
                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
               </svg>
             </div>
           </div>
           <div className="flex items-center text-sm">
-            <span className="flex items-center text-green-600 font-medium">
-              <svg
-                className="w-4 h-4 mr-1"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                <polyline points="17 6 23 6 23 12" />
-              </svg>
-              +12.5%
-            </span>
-            <span className="text-gray-400 ml-2">so với tháng trước</span>
+            <span className="text-green-600 font-semibold">Live</span>
+            <span className="text-gray-400 ml-2">Từ các đơn đã thanh toán</span>
           </div>
         </div>
 
-        {/* Card 2 */}
+        {/* Đơn đặt tour */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Đơn hàng</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">Đơn đặt tour</p>
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                1,234
+                {data.bookingsCount}
               </h3>
             </div>
             <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:scale-110 transition-transform duration-300">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1" />
                 <circle cx="20" cy="21" r="1" />
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
@@ -123,48 +170,23 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center text-sm">
-            <span className="flex items-center text-blue-600 font-medium">
-              <svg
-                className="w-4 h-4 mr-1"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                <polyline points="17 6 23 6 23 12" />
-              </svg>
-              +5.2%
-            </span>
-            <span className="text-gray-400 ml-2">so với tháng trước</span>
+            <span className="text-blue-600 font-semibold">Tất cả</span>
+            <span className="text-gray-400 ml-2">Đơn hàng trong hệ thống</span>
           </div>
         </div>
 
-        {/* Card 3 */}
+        {/* Người dùng */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">
-                Người dùng
-              </p>
+              <p className="text-sm font-medium text-gray-500 mb-1">Người dùng</p>
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                5,678
+                {data.usersCount}
               </h3>
             </div>
             <div className="p-3 bg-purple-50 rounded-xl text-purple-600 group-hover:scale-110 transition-transform duration-300">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
@@ -173,46 +195,23 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center text-sm">
-            <span className="flex items-center text-purple-600 font-medium">
-              <svg
-                className="w-4 h-4 mr-1"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                <polyline points="17 6 23 6 23 12" />
-              </svg>
-              +18.4%
-            </span>
-            <span className="text-gray-400 ml-2">so với tháng trước</span>
+            <span className="text-purple-600 font-semibold">Khách hàng</span>
+            <span className="text-gray-400 ml-2">Tài khoản đăng ký</span>
           </div>
         </div>
 
-        {/* Card 4 */}
+        {/* Tours du lịch */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Sản phẩm</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">Tours hoạt động</p>
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                234
+                {data.toursCount}
               </h3>
             </div>
             <div className="p-3 bg-orange-50 rounded-xl text-orange-600 group-hover:scale-110 transition-transform duration-300">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                 <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                 <line x1="12" y1="22.08" x2="12" y2="12" />
@@ -220,145 +219,222 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center text-sm">
-            <span className="flex items-center text-gray-500 font-medium">
-              <svg
-                className="w-4 h-4 mr-1"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="5" x2="19" y1="12" y2="12" />
-              </svg>
-              Không đổi
-            </span>
-            <span className="text-gray-400 ml-2">so với tháng trước</span>
+            <span className="text-orange-600 font-semibold">Sản phẩm</span>
+            <span className="text-gray-400 ml-2">Đang được chào bán</span>
           </div>
         </div>
       </div>
 
-      {/* Additional Dashboard Content Area */}
+      {/* Charts & Detail Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Chart Area */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        {/* Revenue Chart Area */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-gray-900">
-              Biểu đồ doanh thu
+              Biến động doanh thu theo đơn hàng gần đây
             </h2>
-            <select className="bg-gray-50 border border-gray-200 text-sm rounded-lg px-3 py-2 text-gray-700 outline-none focus:ring-2 focus:ring-blue-500">
-              <option>7 ngày qua</option>
-              <option>30 ngày qua</option>
-              <option>Năm nay</option>
-            </select>
+            <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+              Thực tế
+            </span>
           </div>
-          <div className="h-72 w-full rounded-xl bg-gradient-to-b from-gray-50 to-white border border-gray-100 border-dashed flex items-center justify-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNFMkU4RjAiLz48L3N2Zz4=')] opacity-50"></div>
-            <div className="text-center relative z-10">
-              <div className="w-16 h-16 mx-auto bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-3">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M3 3v18h18" />
-                  <path d="M18 17V9" />
-                  <path d="M13 17V5" />
-                  <path d="M8 17v-3" />
+
+          <div className="w-full relative overflow-x-auto">
+            {data.chartData.length > 0 ? (
+              <div className="min-w-[650px] p-2">
+                <svg className="w-full h-72" viewBox="0 0 650 290">
+                  <defs>
+                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+                      <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                    </linearGradient>
+                    <filter id="lineGlow" x="-10%" y="-10%" width="120%" height="120%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#3b82f6" floodOpacity="0.3" />
+                    </filter>
+                  </defs>
+
+                  {/* Horizontal Guidlines */}
+                  <line x1="50" y1="60" x2="620" y2="60" stroke="#f8fafc" strokeWidth="1.5" />
+                  <line x1="50" y1="120" x2="620" y2="120" stroke="#f8fafc" strokeWidth="1.5" />
+                  <line x1="50" y1="180" x2="620" y2="180" stroke="#f8fafc" strokeWidth="1.5" />
+                  <line x1="50" y1="240" x2="620" y2="240" stroke="#e2e8f0" strokeWidth="1.5" />
+
+                  {/* Area path */}
+                  {firstPoint && lastPoint && (
+                    <>
+                      <path
+                        d={`M ${firstPoint.x} 240 L ${points.map((p) => `${p.x} ${p.y}`).join(" L ")} L ${lastPoint.x} 240 Z`}
+                        fill="url(#areaGrad)"
+                      />
+
+                      {/* Line path */}
+                      <path
+                        d={`M ${firstPoint.x} ${firstPoint.y} L ${points.map((p) => `${p.x} ${p.y}`).join(" L ")}`}
+                        fill="none"
+                        stroke="#3b82f6"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        filter="url(#lineGlow)"
+                      />
+                    </>
+                  )}
+
+                  {/* Nodes & Tooltips */}
+                  {points.map((p, i) => (
+                    <g key={i} className="group cursor-pointer">
+                      {/* Vertical line indicator on hover */}
+                      <line
+                        x1={p.x}
+                        y1={p.y}
+                        x2={p.x}
+                        y2="240"
+                        stroke="#93c5fd"
+                        strokeWidth="1"
+                        strokeDasharray="3"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      />
+                      
+                      {/* Interactive dot */}
+                      <circle
+                        cx={p.x}
+                        cy={p.y}
+                        r="6"
+                        fill="#3b82f6"
+                        stroke="#ffffff"
+                        strokeWidth="2.5"
+                        className="transition-all duration-200 group-hover:r-8"
+                      />
+
+                      {/* Tooltip Card */}
+                      <g className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                        <rect
+                          x={p.x - 60}
+                          y={p.y - 40}
+                          width="120"
+                          height="26"
+                          rx="6"
+                          fill="#0f172a"
+                        />
+                        <text
+                          x={p.x}
+                          y={p.y - 23}
+                          textAnchor="middle"
+                          fill="#ffffff"
+                          className="text-[10px] font-bold"
+                        >
+                          {data.chartData[i]?.value?.toLocaleString("vi-VN")}₫
+                        </text>
+                      </g>
+                    </g>
+                  ))}
+
+                  {/* X Axis Labels */}
+                  {points.map((p, i) => (
+                    <text
+                      key={i}
+                      x={p.x}
+                      y="265"
+                      textAnchor="middle"
+                      className="text-[11px] font-semibold fill-gray-400"
+                    >
+                      {data.chartData[i]?.label || ""}
+                    </text>
+                  ))}
                 </svg>
               </div>
-              <p className="text-gray-500 font-medium">
-                Khu vực hiển thị biểu đồ
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                Tích hợp Chart.js hoặc Recharts
-              </p>
-            </div>
+            ) : (
+              <div className="h-72 w-full flex items-center justify-center border border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                <p className="text-sm text-gray-400 font-medium">Chưa có đủ đơn đặt thành công để vẽ biểu đồ</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-gray-900">
-              Hoạt động gần đây
-            </h2>
-            <button className="text-blue-600 text-sm font-medium hover:text-blue-700">
-              Xem tất cả
-            </button>
-          </div>
-          <div className="space-y-6">
-            {[
-              {
-                time: "10 phút trước",
-                desc: "Đơn hàng mới #1024",
-                user: "Nguyen Van A",
-                icon: "M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z",
-                color: "bg-blue-100 text-blue-600",
-              },
-              {
-                time: "1 giờ trước",
-                desc: "Người dùng đăng ký mới",
-                user: "Tran Thi B",
-                icon: "M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z",
-                color: "bg-green-100 text-green-600",
-              },
-              {
-                time: "3 giờ trước",
-                desc: "Cập nhật sản phẩm",
-                user: "Admin",
-                icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
-                color: "bg-orange-100 text-orange-600",
-              },
-              {
-                time: "5 giờ trước",
-                desc: "Đánh giá 5 sao",
-                user: "Le Van C",
-                icon: "M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z",
-                color: "bg-yellow-100 text-yellow-600",
-              },
-            ].map((activity, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="relative">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${activity.color}`}
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={activity.icon}
-                      />
-                    </svg>
+        {/* Recent Bookings (Thế chỗ Hoạt động gần đây) */}
+        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-gray-900">
+                Đơn đặt tour mới nhất
+              </h2>
+              <Link href="/bookings" className="text-blue-600 text-sm font-semibold hover:text-blue-700">
+                Xem tất cả
+              </Link>
+            </div>
+
+            <div className="space-y-4">
+              {data.recentBookings.length > 0 ? (
+                data.recentBookings.map((booking, i) => (
+                  <div key={booking.id} className="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-xl transition duration-200 border border-gray-50">
+                    <div className="space-y-1">
+                      <p className="text-sm font-bold text-gray-900">Đơn hàng #{booking.id}</p>
+                      <p className="text-xs text-gray-500 font-medium truncate max-w-[150px]">
+                        {booking.phone_number || booking.email || "Khách vãng lai"}
+                      </p>
+                    </div>
+                    <div className="text-right space-y-1">
+                      <p className="text-sm font-bold text-blue-600">
+                        {Number(booking.total_amount || 0).toLocaleString("vi-VN")}₫
+                      </p>
+                      <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                        booking.status === "CONFIRMED" || booking.status === "COMPLETED"
+                          ? "bg-green-50 text-green-700"
+                          : booking.status === "CANCELLED"
+                          ? "bg-red-50 text-red-700"
+                          : "bg-yellow-50 text-yellow-700"
+                      }`}>
+                        {booking.status}
+                      </span>
+                    </div>
                   </div>
-                  {i !== 3 && (
-                    <div className="absolute top-10 bottom-[-24px] left-1/2 w-px bg-gray-200"></div>
-                  )}
-                </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-400 py-10 text-center">Chưa có đơn đặt tour nào</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Area: Recent Reviews */}
+      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-bold text-gray-900">
+            Phản hồi & Đánh giá gần đây
+          </h2>
+          <Link href="/reviews" className="text-blue-600 text-sm font-semibold hover:text-blue-700">
+            Xem tất cả
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {data.recentReviews.length > 0 ? (
+            data.recentReviews.map((review) => (
+              <div key={review.id} className="p-5 bg-slate-50/50 hover:bg-slate-50 transition border border-gray-100 rounded-xl flex flex-col justify-between h-40">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {activity.desc}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-gray-400">Đơn #{review.booking?.id || "—"}</span>
+                    <div className="flex items-center text-yellow-400 text-sm">
+                      <span className="font-extrabold mr-0.5">{review.rating}</span>★
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 font-medium line-clamp-3 italic">
+                    "{review.comment || "Không có nội dung nhận xét."}"
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {activity.user} • {activity.time}
-                  </p>
+                </div>
+                <div className="mt-3 pt-2 border-t border-gray-200/50 flex justify-between items-center text-[10px] text-gray-400 font-medium">
+                  <span>Mã đánh giá: #{review.id}</span>
+                  <span className={`px-1.5 py-0.5 rounded font-bold ${
+                    review.status === "ACTIVE" ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"
+                  }`}>{review.status}</span>
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          ) : (
+            <div className="col-span-full py-8 text-center">
+              <p className="text-sm text-gray-400 font-medium">Chưa nhận được phản hồi đánh giá nào</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

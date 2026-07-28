@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import transportService from "@/services/transport-service";
 
-export default function UpdateTransportPage() {
+function UpdateTransportPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const transportId = searchParams.get("id");
@@ -57,5 +57,13 @@ export default function UpdateTransportPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function UpdateTransportPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-500">Đang tải...</div>}>
+      <UpdateTransportPageContent />
+    </Suspense>
   );
 }

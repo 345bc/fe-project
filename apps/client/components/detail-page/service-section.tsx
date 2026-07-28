@@ -16,6 +16,8 @@ interface ServiceSectionProps {
     selectedServices: number[];
     onToggleService: (serviceId: number) => void;
     onServicesLoad: (services: ServiceItems[]) => void;
+    tourName?: string;
+    tourServiceRules?: any[];
 }
 
 // const getServiceIcon = (name: string) => {
@@ -34,7 +36,9 @@ const formatPrice = (price: number) => {
 export default function ServiceSection({
     selectedServices,
     onToggleService,
-    onServicesLoad
+    onServicesLoad,
+    tourName,
+    tourServiceRules
 }: ServiceSectionProps) {
     const [services, setServices] = useState<ServiceItems[]>([]);
     const [loading, setLoading] = useState(true);
@@ -85,7 +89,11 @@ export default function ServiceSection({
             <div className="divide-y divide-slate-100">
                 {services.map((service) => {
                     const isSelected = selectedServices.includes(service.id);
-                    // const IconComponent = getServiceIcon(service.name);
+                    const isCommonlyBooked = tourServiceRules?.some(
+                        (rule) =>
+                            rule.tourName === tourName &&
+                            rule.serviceName === service.name
+                    );
                     return (
                         <div
                             key={service.id}
@@ -95,8 +103,13 @@ export default function ServiceSection({
                             {/* Left side: Circular Icon & Description */}
                             <div className="flex items-center gap-4 min-w-0 pr-4">
                                 <div className="min-w-0">
-                                    <h4 className="text-sm md:text-base font-bold text-text-primary transition-colors group-hover:text-primary">
+                                    <h4 className="text-sm md:text-base font-bold text-text-primary transition-colors group-hover:text-primary flex items-center gap-2">
                                         {service.name}
+                                        {isCommonlyBooked && (
+                                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200/50 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                Thường được đặt chung
+                                            </span>
+                                        )}
                                     </h4>
                                     <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 group-hover:text-slate-500 transition-colors text-justify">
                                         {service.description}

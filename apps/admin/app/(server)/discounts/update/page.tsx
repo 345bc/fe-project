@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import discountService from "@/services/discount-service";
 
-export default function UpdateDiscountPage() {
+function UpdateDiscountPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const discountId = searchParams.get("id");
@@ -69,5 +69,13 @@ export default function UpdateDiscountPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function UpdateDiscountPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-500">Đang tải...</div>}>
+      <UpdateDiscountPageContent />
+    </Suspense>
   );
 }

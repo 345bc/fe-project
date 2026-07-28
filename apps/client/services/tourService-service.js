@@ -9,7 +9,7 @@ const ServiceAddition = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Không thể tải dịch vụ đi kèm";
             throw new Error(message);
         }
     },

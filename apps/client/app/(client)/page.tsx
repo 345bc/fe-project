@@ -5,6 +5,7 @@ import SeeAllButton from "@/components/ui/SeeAllButton";
 import SearchBar from "@/components/search-bar";
 import CategorySection from "@/components/category-section";
 import TourSection from "@/components/tour-section";
+import ComboTourSection from "@/components/combo-tour-section";
 import BlogCardSection from "@/components/blog-section";
 import TravelMenu from "@/components/drop-down";
 
@@ -59,15 +60,15 @@ export default function HomePage() {
           <TourSection />
         </div>
       </section>
-      {/* Last minute tour card */}
+      {/* Combo tour card */}
       <section className="wrapper-surface">
         <div className="container-main">
           <SectionTitle
             align="text-left"
-            title="Đừng bỏ lỡ hành trình này"
-            description="Những chuyến đi được yêu thích nhất đang sắp hết hạn đặt chỗ. Đừng bỏ lỡ cơ hội trải nghiệm hành trình tuyệt vời cùng bạn bè và gia đình."
+            title="Combo Siêu Hot"
+            description="Tiết kiệm hơn với các gói Combo Tour + Dịch vụ đi kèm hấp dẫn được đề xuất tự động bởi ZTravel AI."
           />
-          <TourSection />
+          <ComboTourSection />
         </div>
       </section>
       {/* Blog */}

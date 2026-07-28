@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useRef, useState, useEffect } from "react";
 
 interface ListSliderProps {
@@ -64,7 +64,7 @@ const ListSlider = ({ children }: ListSliderProps) => {
         className="flex gap-4 md:gap-6 flex-nowrap overflow-x-auto no-scrollbar snap-x-mandatory scroll-smooth pb-8 pt-4 -mt-4"
       >
         {React.Children.map(children, (child) => (
-          <div className="flex-none h-full w-[85%]  md:w-[calc(50%-12px)] lg:w-[calc(30%-4px)] snap-start">
+          <div className="flex-none h-full w-[85%]  md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] snap-start">
             {child}
           </div>
         ))}

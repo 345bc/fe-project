@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import blogCategoryService from "@/services/blog-category-service";
 
-export default function UpdateBlogCategoryPage() {
+function UpdateBlogCategoryPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const catId = searchParams.get("id");
@@ -58,5 +58,13 @@ export default function UpdateBlogCategoryPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function UpdateBlogCategoryPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-500">Đang tải...</div>}>
+      <UpdateBlogCategoryPageContent />
+    </Suspense>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import bookingService from "@/services/booking-service";
 
-export default function UpdateBookingPage() {
+function UpdateBookingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("id");
@@ -88,5 +88,13 @@ export default function UpdateBookingPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function UpdateBookingPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-500">Đang tải...</div>}>
+      <UpdateBookingPageContent />
+    </Suspense>
   );
 }

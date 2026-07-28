@@ -2,11 +2,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import AuthInput from "@/components/ui/AuthInput";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
 import authService from "@/services/auth-service";
 
 export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInContent />
+    </Suspense>
+  );
+}
+
+function SignInContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, seterror] = useState("");
   const [success, setsuccess] = useState("");
   const [loading, setloading] = useState(false);
@@ -31,10 +41,11 @@ export default function SignInPage() {
     setloading(false);
 
     if (result.success) {
-      setsuccess("Sign-in successful! Redirecting to Home");
+      const redirectTo = searchParams.get("redirect") || "/";
+      setsuccess("Đăng nhập thành công! Đang chuyển trang...");
       setTimeout(() => {
-        window.location.href = "/";
-      }, 2000);
+        window.location.href = redirectTo;
+      }, 800);
     } else {
       seterror(result.message);
       setTimeout(() => seterror(""), 3000);

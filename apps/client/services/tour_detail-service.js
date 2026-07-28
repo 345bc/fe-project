@@ -10,7 +10,7 @@ const tourDetailService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Không thể tải danh sách chi tiết tour";
             throw new Error(message);
         }
     },
@@ -22,7 +22,7 @@ const tourDetailService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Không thể tải thông tin chi tiết tour";
             throw new Error(message);
         }
     },
@@ -34,7 +34,7 @@ const tourDetailService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Không thể tải chi tiết tour theo mã tour";
             throw new Error(message);
         }
     },

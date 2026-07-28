@@ -25,6 +25,30 @@ const bookingService = {
             const message = e.response?.data?.message || e.message || "Không thể lấy danh sách đơn hàng";
             throw new Error(message);
         }
+    },
+
+    async calculatePrice(calculationData) {
+        try {
+            const res = await tokenBearer.post(`${baseURL}/bookings/calculate`, calculationData, {
+                withCredentials: true,
+            });
+            return res.data;
+        } catch (e) {
+            const message = e.response?.data?.message || e.message || "Failed to calculate booking price";
+            throw new Error(message);
+        }
+    },
+
+    async cancelBooking(bookingId) {
+        try {
+            const res = await tokenBearer.put(`${baseURL}/bookings/${bookingId}/cancel`, {}, {
+                withCredentials: true,
+            });
+            return res.data;
+        } catch (e) {
+            const message = e.response?.data?.message || e.message || "Không thể hủy đơn đặt tour";
+            throw new Error(message);
+        }
     }
 };
 

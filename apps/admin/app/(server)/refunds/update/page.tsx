@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import refundService from "@/services/refund-service";
 
-export default function UpdateRefundPage() {
+function UpdateRefundPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const refundId = searchParams.get("id");
@@ -60,5 +60,13 @@ export default function UpdateRefundPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function UpdateRefundPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-500">Đang tải...</div>}>
+      <UpdateRefundPageContent />
+    </Suspense>
   );
 }

@@ -10,7 +10,7 @@ const destinationService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Không thể tải danh sách điểm đến";
             throw new Error(message);
         }
     },
@@ -22,7 +22,7 @@ const destinationService = {
             });
             return res.data.data;
         } catch (e) {
-            const message = e.response?.data?.message;
+            const message = e.response?.data?.message || e.message || "Không thể tải tất cả điểm đến";
             throw new Error(message);
         }
     },

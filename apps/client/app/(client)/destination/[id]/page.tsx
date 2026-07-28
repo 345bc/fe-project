@@ -18,17 +18,11 @@ import {
 import destinationService from "@/services/destination-service";
 import tourService from "@/services/tour-service";
 import categoryService from "@/services/category-service";
+import dataminingService from "@/services/datamining-service";
 import TourCard from "@/components/ui/TourCard";
 import CustomSelect, { Option } from "@/components/ui/CustomSelect";
 import PriceRangeSlider from "@/components/ui/PriceRangeSlider";
 
-const attractionOptions: Option[] = [
-  { id: 1, name: "Vinpearl Safari" },
-  { id: 2, name: "Chợ Đêm" },
-  { id: 3, name: "Hồ Tuyền Lâm" },
-  { id: 4, name: "Bà Nà Hills" },
-  { id: 5, name: "Fansipan" },
-];
 
 export type Tours = {
   id: number;
@@ -51,6 +45,7 @@ export type Tours = {
     id: number;
     name: string;
   };
+  bookingCount?: number;
 };
 
 export type Destinations = {
@@ -88,6 +83,7 @@ export default function DestinationPage({ params }: PageProps) {
   const [isPriceExpanded, setIsPriceExpanded] = useState(true);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
+  const [aprioriData, setAprioriData] = useState<any>({ destinationRules: [] });
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -126,15 +122,17 @@ export default function DestinationPage({ params }: PageProps) {
     const fetchData = async () => {
       if (isNaN(id)) return;
       try {
-        const [destData, toursData, allDestData, categoriesData] = await Promise.all([
+        const [destData, toursData, allDestData, categoriesData, rulesData] = await Promise.all([
           destinationService.getDestinationById(id),
           tourService.getTours(), // Tải toàn bộ tour để hỗ trợ lọc đa điểm đến trên cùng một trang
           destinationService.getAll(),
           categoryService.getCategories(),
+          dataminingService.getAprioriResults(0.01, 0.01)
         ]);
         setDestination(destData);
         setTours(toursData);
         setCategories(categoriesData || []);
+        setAprioriData(rulesData || { destinationRules: [] });
         if (allDestData && Array.isArray(allDestData)) {
           setAllDestinations(
             allDestData.map((d: any) => ({ id: d.id, name: d.name })),
@@ -186,6 +184,16 @@ export default function DestinationPage({ params }: PageProps) {
     const matchPrice = tour.price >= priceRange[0] && tour.price <= maxSelectablePrice;
     return matchDest && matchAttr && matchCate && matchPrice;
   });
+
+  const displayedTours = (() => {
+    let result = [...filteredTours];
+    if (!sortBy || sortBy === "nearest") {
+      result.sort((a, b) => (b.bookingCount || 0) - (a.bookingCount || 0));
+    }
+    return result;
+  })();
+
+  const maxBookingCount = Math.max(...displayedTours.map(t => t.bookingCount || 0), 0);
 
   const getCategoryTourCount = (categoryId: number) => {
     return tours.filter(tour => {
@@ -445,7 +453,7 @@ export default function DestinationPage({ params }: PageProps) {
               <p className="text-text-primary text-base">
                 Kết quả:{" "}
                 <span className="font-bold text-slate-900 text-lg">
-                  {filteredTours.length}
+                  {displayedTours.length}
                 </span>{" "}
                 chương trình tour
               </p>
@@ -506,18 +514,36 @@ export default function DestinationPage({ params }: PageProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {tours.map((tour) => (
-                <TourCard
-                  key={tour.id}
-                  image={`/images/${tour.image}`}
-                  category={tour.categories?.name || ""}
-                  title={tour.name}
-                  duration={tour.duration}
-                  price={tour.price}
-                  description={tour.description}
-                  href="/"
-                />
-              ))}
+              {displayedTours.map((tour) => {
+                let badgeText = undefined;
+                if (destination && aprioriData.destinationRules) {
+                  const rule = aprioriData.destinationRules.find(
+                    (r: any) => 
+                      r.destination?.toLowerCase() === destination.name?.toLowerCase() &&
+                      r.tourName?.toLowerCase() === tour.name?.toLowerCase()
+                  );
+                  if (rule) {
+                    if (rule.confidence >= 0.7) {
+                      badgeText = "🔥 Hot";
+                    } else if (rule.confidence >= 0.5) {
+                      badgeText = "🔥 Bán chạy";
+                    }
+                  }
+                }
+                return (
+                  <TourCard
+                    key={tour.id}
+                    image={`/images/${tour.image}`}
+                    category={tour.categories?.name || ""}
+                    title={tour.name}
+                    duration={tour.duration}
+                    price={tour.price}
+                    description={tour.description}
+                    href={`/detail/${tour.id}`}
+                    badgeText={badgeText}
+                  />
+                );
+              })}
             </div>
 
           </section>

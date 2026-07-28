@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteUserButton from "@/components/DeleteUserButton";
+import DeleteTourButton from "@/components/DeleteTourButton";
 import Image from "next/image";
 
 const baseURL = "http://localhost:8080";
@@ -168,8 +168,8 @@ export default async function TourPage() {
                   <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">
                     {tour.name}
                   </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">
-                    {tour.price}
+                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600 font-medium">
+                    {Number(tour.price).toLocaleString("vi-VN")}₫
                   </td>
                   <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">
                     {tour.status}
@@ -203,12 +203,12 @@ export default async function TourPage() {
                   <td className="whitespace-nowrap px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link
-                        href={`/users/update?id=${tour.id}`}
+                        href={`/tours/update?id=${tour.id}`}
                         className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         Sửa
                       </Link>
-                      <DeleteUserButton userId={tour.id} userName={tour.name} />
+                      <DeleteTourButton tourId={tour.id} tourName={tour.name} />
                     </div>
                   </td>
                 </tr>

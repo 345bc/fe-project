@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteUserButton from "@/components/DeleteUserButton";
+import DeleteDestinationButton from "@/components/DeleteDestinationButton";
 import Image from "next/image";
 
 const baseURL = "http://localhost:8080";
@@ -25,7 +25,7 @@ export default async function DestinationPage() {
       redirect("/sign-in");
     }
 
-    const res = await fetch(`${baseURL}/destinaitons`, {
+    const res = await fetch(`${baseURL}/destinations`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -49,10 +49,10 @@ export default async function DestinationPage() {
     if (err?.digest?.startsWith("NEXT_REDIRECT")) {
       throw err;
     }
-    error = err instanceof Error ? err.message : "Không thể tải danh sách tour";
+    error = err instanceof Error ? err.message : "Không thể tải danh sách điểm đến";
   }
 
-  const res: destinations[] = data?.data || [];
+  const destinationsList: destinations[] = data?.data || [];
 
   return (
     <div className="space-y-5">
@@ -66,7 +66,7 @@ export default async function DestinationPage() {
         </div>
 
         <Link
-          href="/tours/add"
+          href="/destinations/add"
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
         >
           Thêm Điểm đến
@@ -82,16 +82,16 @@ export default async function DestinationPage() {
       )}
 
       {/* Empty state */}
-      {data && res.length === 0 && (
+      {data && destinationsList.length === 0 && (
         <div className="flex flex-col items-center py-16 text-center">
           <p className="text-sm font-medium text-gray-900">
-            Chưa có Điểm đến dùng nào
+            Chưa có Điểm đến nào
           </p>
           <p className="mt-1 text-sm text-gray-500">
-            Bắt đầu bằng cách thêm tour dùng đầu tiên.
+            Bắt đầu bằng cách thêm Điểm đến đầu tiên.
           </p>
           <Link
-            href="/tours/add"
+            href="/destinations/add"
             className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
             Thêm Điểm đến
@@ -100,7 +100,7 @@ export default async function DestinationPage() {
       )}
 
       {/* Table */}
-      {data && res.length > 0 && (
+      {data && destinationsList.length > 0 && (
         <div className="overflow-hidden rounded-xl border border-gray-200">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -121,7 +121,7 @@ export default async function DestinationPage() {
             </thead>
 
             <tbody className="divide-y divide-gray-100 bg-white">
-              {res.map((item: destinations) => (
+              {destinationsList.map((item: destinations) => (
                 <tr
                   key={item.id}
                   className="hover:bg-gray-50 transition-colors"
@@ -146,12 +146,12 @@ export default async function DestinationPage() {
                   <td className="whitespace-nowrap px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link
-                        href={`/users/update?id=${item.id}`}
+                        href={`/destinations/update?id=${item.id}`}
                         className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         Sửa
                       </Link>
-                      <DeleteUserButton userId={item.id} userName={item.name} />
+                      <DeleteDestinationButton destinationId={item.id} destinationName={item.name} />
                     </div>
                   </td>
                 </tr>
