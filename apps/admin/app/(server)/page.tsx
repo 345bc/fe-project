@@ -2,8 +2,11 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-
-export default async function AdminDashboard() {
+interface PageProps {
+  searchParams: Promise<{ period?: string }>;
+}
+export default async function AdminDashboard({ searchParams }: PageProps) {
+  const { period = "30d" } = await searchParams;
   let data = {
     revenue: 0,
     bookingsCount: 0,
@@ -111,49 +114,46 @@ export default async function AdminDashboard() {
             Tổng quan hệ thống
           </h1>
           <p className="text-gray-300 font-medium">
-            Chào mừng trở lại! Dưới đây là thống kê chi tiết từ cơ sở dữ liệu.
+            Chào mừng trở lại!
           </p>
+        </div>
+        <div className="relative z-10 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl text-sm font-medium border border-white/10">
+            <span className="material-symbols-outlined text-lg">calendar_month</span>
+            <span>Last 30 days</span>
+          </div>
+          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 transition-colors px-4 py-2 rounded-xl text-sm font-medium shadow-md cursor-pointer">
+            <span className="material-symbols-outlined text-lg">download</span>
+            <span>Export Report</span>
+          </button>
         </div>
       </div>
-
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          <p className="font-medium">Lỗi kết nối cơ sở dữ liệu</p>
-          <p className="mt-1 text-red-600">{error}</p>
-          <p className="mt-1 text-xs text-red-500">
-            Kiểm tra trạng thái chạy của backend tại http://localhost:8080
-          </p>
-        </div>
-      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Doanh thu */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+          <div className="absolute top-0 left-0 w-1 h-full bg-blue-gray "></div>
           <div className="flex justify-between items-start mb-4">
-            <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Doanh thu thực tế</p>
-              <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                {data.revenue.toLocaleString("vi-VN")}₫
+
+            <div className="w-1/2 truncate" title={`${data.revenue.toLocaleString("vi-VN")} ₫`}>
+              <p className="text-sm font-medium text-gray-500 mb-1">Doanh thu</p>
+              <h3 className="text-2xl font-bold text-gray-900 tracking-tight truncate">
+                {data.revenue.toLocaleString("vi-VN")} ₫
               </h3>
             </div>
-            <div className="p-3 bg-green-50 rounded-xl text-green-600 group-hover:scale-110 transition-transform duration-300">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" x2="12" y1="2" y2="22" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
+            <div className="p-3 bg-white/10 border-2  rounded-xl text-blue-gray group-hover:scale-110 transition-transform duration-300">
+              <span className="material-symbols-outlined">
+                attach_money
+              </span>
             </div>
           </div>
-          <div className="flex items-center text-sm">
-            <span className="text-green-600 font-semibold">Live</span>
-            <span className="text-gray-400 ml-2">Từ các đơn đã thanh toán</span>
-          </div>
+
         </div>
 
         {/* Đơn đặt tour */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+          <div className="absolute top-0 left-0 w-1 h-full bg-blue-gray"></div>
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-sm font-medium text-gray-500 mb-1">Đơn đặt tour</p>
@@ -161,23 +161,18 @@ export default async function AdminDashboard() {
                 {data.bookingsCount}
               </h3>
             </div>
-            <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:scale-110 transition-transform duration-300">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
+            <div className="p-3 bg-white/10 border-2  rounded-xl text-blue-gray group-hover:scale-110 transition-transform duration-300">
+              <span className="material-symbols-outlined">
+                order_approve
+              </span>
             </div>
           </div>
-          <div className="flex items-center text-sm">
-            <span className="text-blue-600 font-semibold">Tất cả</span>
-            <span className="text-gray-400 ml-2">Đơn hàng trong hệ thống</span>
-          </div>
+
         </div>
 
         {/* Người dùng */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+          <div className="absolute top-0 left-0 w-1 h-full bg-blue-gray"></div>
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-sm font-medium text-gray-500 mb-1">Người dùng</p>
@@ -185,24 +180,18 @@ export default async function AdminDashboard() {
                 {data.usersCount}
               </h3>
             </div>
-            <div className="p-3 bg-purple-50 rounded-xl text-purple-600 group-hover:scale-110 transition-transform duration-300">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
+            <div className="p-3 bg-white/10 border-2  rounded-xl text-blue-gray group-hover:scale-110 transition-transform duration-300">
+              <span className="material-symbols-outlined">
+                person
+              </span>
             </div>
           </div>
-          <div className="flex items-center text-sm">
-            <span className="text-purple-600 font-semibold">Khách hàng</span>
-            <span className="text-gray-400 ml-2">Tài khoản đăng ký</span>
-          </div>
+
         </div>
 
         {/* Tours du lịch */}
         <div className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+          <div className="absolute top-0 left-0 w-1 h-full bg-blue-gray"></div>
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-sm font-medium text-gray-500 mb-1">Tours hoạt động</p>
@@ -210,18 +199,13 @@ export default async function AdminDashboard() {
                 {data.toursCount}
               </h3>
             </div>
-            <div className="p-3 bg-orange-50 rounded-xl text-orange-600 group-hover:scale-110 transition-transform duration-300">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-                <line x1="12" y1="22.08" x2="12" y2="12" />
-              </svg>
+            <div className="p-3 bg-white/10 border-2  rounded-xl text-blue-gray group-hover:scale-110 transition-transform duration-300">
+              <span className="material-symbols-outlined">
+                Label
+              </span>
             </div>
           </div>
-          <div className="flex items-center text-sm">
-            <span className="text-orange-600 font-semibold">Sản phẩm</span>
-            <span className="text-gray-400 ml-2">Đang được chào bán</span>
-          </div>
+
         </div>
       </div>
 
@@ -293,7 +277,7 @@ export default async function AdminDashboard() {
                         strokeDasharray="3"
                         className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                       />
-                      
+
                       {/* Interactive dot */}
                       <circle
                         cx={p.x}
@@ -376,13 +360,12 @@ export default async function AdminDashboard() {
                       <p className="text-sm font-bold text-blue-600">
                         {Number(booking.total_amount || 0).toLocaleString("vi-VN")}₫
                       </p>
-                      <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                        booking.status === "CONFIRMED" || booking.status === "COMPLETED"
-                          ? "bg-green-50 text-green-700"
-                          : booking.status === "CANCELLED"
+                      <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-full ${booking.status === "CONFIRMED" || booking.status === "COMPLETED"
+                        ? "bg-green-50 text-green-700"
+                        : booking.status === "CANCELLED"
                           ? "bg-red-50 text-red-700"
                           : "bg-yellow-50 text-yellow-700"
-                      }`}>
+                        }`}>
                         {booking.status}
                       </span>
                     </div>
@@ -424,9 +407,8 @@ export default async function AdminDashboard() {
                 </div>
                 <div className="mt-3 pt-2 border-t border-gray-200/50 flex justify-between items-center text-[10px] text-gray-400 font-medium">
                   <span>Mã đánh giá: #{review.id}</span>
-                  <span className={`px-1.5 py-0.5 rounded font-bold ${
-                    review.status === "ACTIVE" ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"
-                  }`}>{review.status}</span>
+                  <span className={`px-1.5 py-0.5 rounded font-bold ${review.status === "ACTIVE" ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"
+                    }`}>{review.status}</span>
                 </div>
               </div>
             ))

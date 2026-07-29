@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -8,6 +9,7 @@
   --color-match-mist: #c2d8c4;
   --color-white-smoke: #f5f5f5;
   --color-platinum: #e5e4e2;
+  --color-blue-gray: #303a49;
 
   --animate-shimmer: shimmer 1.5s infinite;
 

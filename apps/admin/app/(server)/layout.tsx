@@ -17,14 +17,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        />
+      </head>
       <body className={inter.className}>
         <div className="flex min-h-screen bg-gray-100">
           {/* Sidebar */}
           <aside className="w-64 bg-white-smoke border-r border-gray-200 flex flex-col">
             {/* Brand */}
-            <div className="h-16 flex items-center px-6 border-b border-gray-200">
-              <span className="text-lg font-semibold text-gray-900">
-                Admin Panel
+            <div className="h-16 flex items-center justify-center px-6 border-b border-gray-200">
+              <span className="text-lg font-bold  text-gray-900 ">
+                ZTRAVEL
               </span>
             </div>
 
@@ -151,7 +157,6 @@ export default function RootLayout({
             {/* Header */}
             <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
               <span className="text-sm font-medium text-gray-900">
-                Trang quản trị
               </span>
 
               <LogoutButton />
