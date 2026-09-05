@@ -1,21 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteDiscountButton from "@/components/DeleteDiscountButton";
+import DiscountsTable, { Discount } from "@/components/DiscountsTable";
 
 const baseURL = "http://localhost:8080";
-
-export type Discount = {
-  id: number;
-  code: string;
-  name: string;
-  discountValue: number;
-  startDate: string;
-  endDate: string;
-  maxUsage: number | null;
-  usedCount: number;
-  status: string;
-};
 
 export default async function DiscountsPage() {
   let data = null;
@@ -51,14 +39,6 @@ export default async function DiscountsPage() {
 
   const discounts: Discount[] = data?.data || [];
 
-  const statusColor = (status: string) => {
-    switch (status) {
-      case "ACTIVE": return "bg-green-100 text-green-700";
-      case "EXPIRED": return "bg-red-100 text-red-700";
-      default: return "bg-gray-100 text-gray-700";
-    }
-  };
-
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -84,40 +64,9 @@ export default async function DiscountsPage() {
         </div>
       )}
 
+      {/* Table Component with Live Search Bar */}
       {data && discounts.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Mã</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tên</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Giá trị</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Đã dùng</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Trạng thái</th>
-                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {discounts.map((d: Discount) => (
-                <tr key={d.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-mono font-medium text-gray-900">{d.code}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">{d.name}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">{Number(d.discountValue).toLocaleString("vi-VN")}₫</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">{d.usedCount}{d.maxUsage ? `/${d.maxUsage}` : ""}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(d.status)}`}>{d.status}</span>
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href={`/discounts/update?id=${d.id}`} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">Sửa</Link>
-                      <DeleteDiscountButton discountId={d.id} discountName={d.name} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DiscountsTable discounts={discounts} />
       )}
     </div>
   );

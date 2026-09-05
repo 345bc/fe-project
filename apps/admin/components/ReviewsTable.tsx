@@ -196,7 +196,9 @@ export default function ReviewsTable({ initialReviews }: ReviewsTableProps) {
                     </div>
                   </td>
                   <td className="px-5 py-4 text-xs text-slate-600 max-w-[250px] font-medium leading-relaxed italic">
-                    "{r.comment || "Không có nhận xét"}"
+                    <p className="line-clamp-2" title={r.comment}>
+                      "{r.comment || "Không có nhận xét"}"
+                    </p>
                   </td>
                   <td className="whitespace-nowrap px-5 py-4">
                     <span

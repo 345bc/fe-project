@@ -33,9 +33,9 @@ export default function DeleteUserButton({
     <>
       <button
         onClick={() => setShowConfirm(true)}
-        className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+        className="rounded-md border border-amber-200 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50 transition-colors"
       >
-        Xóa
+        Vô hiệu hóa
       </button>
 
       {/* Confirmation modal — portaled to body to avoid table overflow clipping */}
@@ -51,9 +51,9 @@ export default function DeleteUserButton({
             {/* Modal */}
             <div className="relative mx-4 w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-xl">
               {/* Warning icon */}
-              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-red-100">
+              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-amber-100">
                 <svg
-                  className="h-5 w-5 text-red-600"
+                  className="h-5 w-5 text-amber-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
@@ -68,12 +68,12 @@ export default function DeleteUserButton({
               </div>
 
               <h3 className="mt-4 text-center text-base font-semibold text-gray-900">
-                Xác nhận xóa
+                Xác nhận vô hiệu hóa
               </h3>
               <p className="mt-2 text-center text-sm text-gray-500">
-                Bạn có chắc chắn muốn xóa người dùng{" "}
+                Bạn có chắc chắn muốn vô hiệu hóa người dùng{" "}
                 <span className="font-medium text-gray-700">{userName}</span>?
-                Hành động này không thể hoàn tác.
+                Tài khoản này sẽ bị khóa và không thể đăng nhập.
               </p>
 
               <div className="mt-5 flex gap-3">
@@ -89,9 +89,9 @@ export default function DeleteUserButton({
                   type="button"
                   disabled={deleting}
                   onClick={handleDelete}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="flex-1 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors disabled:opacity-50"
                 >
-                  {deleting ? "Đang xóa..." : "Xóa"}
+                  {deleting ? "Đang xử lý..." : "Vô hiệu hóa"}
                 </button>
               </div>
             </div>

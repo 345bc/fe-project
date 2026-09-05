@@ -77,7 +77,11 @@ export default function DateFilter() {
         className="appearance-none bg-white/10 backdrop-blur-md px-4 py-2 pr-8 rounded-xl text-sm font-medium border border-white/10 text-white cursor-pointer hover:bg-white/20 transition-all focus:outline-none"
       >
         {FILTER_OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value} className="bg-gray-800 text-white">
+          <option
+            key={opt.value}
+            value={opt.value}
+            className="bg-gray-800 text-white"
+          >
             {opt.label}
           </option>
         ))}
@@ -168,11 +172,11 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
 
     // Tính tổng doanh thu từ các đơn hàng thành công đã lọc
     const successfulBookings = bookings.filter(
-      (b: any) => b.status === "CONFIRMED" || b.status === "COMPLETED"
+      (b: any) => b.status === "CONFIRMED" || b.status === "COMPLETED",
     );
     data.revenue = successfulBookings.reduce(
       (sum: number, b: any) => sum + Number(b.total_amount || 0),
-      0
+      0,
     );
 
     data.recentBookings = [...bookings]
@@ -246,7 +250,7 @@ function getDateRange(period: string) {
 
   return {
     startDate: startDate.toISOString().split("T")[0], // YYYY-MM-DD
-    endDate: endDate.toISOString().split("T")[0],     // YYYY-MM-DD
+    endDate: endDate.toISOString().split("T")[0], // YYYY-MM-DD
   };
 }
 
@@ -257,7 +261,7 @@ const bookingsRes = await fetch(
   {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
-  }
+  },
 ).then((r) => (r.ok ? r.json() : null));
 ```
 
@@ -271,12 +275,12 @@ const bookingsRes = await fetch(
 
 ```sql
 -- Nếu nhận period = 30d
-SELECT * FROM bookings 
+SELECT * FROM bookings
 WHERE created_at >= NOW() - INTERVAL '30 days'
 ORDER BY created_at DESC;
 
 -- Nếu nhận startDate & endDate
-SELECT * FROM bookings 
+SELECT * FROM bookings
 WHERE created_at BETWEEN '2026-06-29 00:00:00' AND '2026-07-29 23:59:59'
 ORDER BY created_at DESC;
 ```

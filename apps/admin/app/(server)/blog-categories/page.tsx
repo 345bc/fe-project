@@ -1,16 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteBlogCategoryButton from "@/components/DeleteBlogCategoryButton";
+import BlogCategoriesTable, { BlogCategory } from "@/components/BlogCategoriesTable";
 
 const baseURL = "http://localhost:8080";
-
-export type BlogCategory = {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-};
 
 export default async function BlogCategoriesPage() {
   let data = null;
@@ -69,34 +62,9 @@ export default async function BlogCategoriesPage() {
         </div>
       )}
 
+      {/* Table Component with Live Search Bar */}
       {data && categories.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tên</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Slug</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Mô tả</th>
-                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {categories.map((cat: BlogCategory) => (
-                <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">{cat.name}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-mono text-gray-600">{cat.slug}</td>
-                  <td className="px-5 py-3.5 text-sm text-gray-600 max-w-[300px] truncate">{cat.description || "—"}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href={`/blog-categories/update?id=${cat.id}`} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">Sửa</Link>
-                      <DeleteBlogCategoryButton categoryId={cat.id} categoryName={cat.name} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <BlogCategoriesTable categories={categories} />
       )}
     </div>
   );

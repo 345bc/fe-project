@@ -1,15 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
+import { NextResponse } from "next/server";
 import path from "path";
+import fs from "fs/promises";
+import { existsSync } from "fs";
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
 
     if (!file) {
       return NextResponse.json(
-        { success: false, message: "No file provided" },
+        { success: false, message: "Không tìm thấy file tải lên" },
         { status: 400 }
       );
     }
@@ -17,36 +18,39 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create a unique filename
-    const fileExtension = path.extname(file.name);
-    const fileNameWithoutExt = path.basename(file.name, fileExtension);
-    const sanitizedName = fileNameWithoutExt.replace(/[^a-zA-Z0-9_-]/g, "_");
-    const uniqueFileName = `${Date.now()}_${sanitizedName}${fileExtension}`;
+    // Sanitize and generate unique filename
+    const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const uniqueFilename = `${Date.now()}_${cleanFileName}`;
 
-    // Target directories: save to both admin and client apps
-    const adminUploadDir = path.resolve("public/images");
-    const clientUploadDir = path.resolve("../client/public/images");
+    // Target directory in admin app public/images
+    const adminPublicImagesDir = path.join(process.cwd(), "public", "images");
+    if (!existsSync(adminPublicImagesDir)) {
+      await fs.mkdir(adminPublicImagesDir, { recursive: true });
+    }
 
-    // Ensure target directories exist
-    await mkdir(adminUploadDir, { recursive: true });
-    await mkdir(clientUploadDir, { recursive: true });
+    const adminFilePath = path.join(adminPublicImagesDir, uniqueFilename);
+    await fs.writeFile(adminFilePath, buffer);
 
-    // Write file to Admin public/images
-    const adminFilePath = path.join(adminUploadDir, uniqueFileName);
-    await writeFile(adminFilePath, buffer);
-
-    // Write file to Client public/images
-    const clientFilePath = path.join(clientUploadDir, uniqueFileName);
-    await writeFile(clientFilePath, buffer);
+    // Also copy to client app public/images if exists
+    try {
+      const clientPublicImagesDir = path.join(process.cwd(), "..", "client", "public", "images");
+      if (existsSync(clientPublicImagesDir)) {
+        const clientFilePath = path.join(clientPublicImagesDir, uniqueFilename);
+        await fs.writeFile(clientFilePath, buffer);
+      }
+    } catch (copyErr) {
+      console.warn("Could not copy uploaded image to client app public folder:", copyErr);
+    }
 
     return NextResponse.json({
       success: true,
-      filename: uniqueFileName,
+      filename: uniqueFilename,
+      url: `/images/${uniqueFilename}`,
     });
-  } catch (error: any) {
-    console.error("Upload error:", error);
+  } catch (err: any) {
+    console.error("Lỗi upload ảnh:", err);
     return NextResponse.json(
-      { success: false, message: error.message || "Upload failed" },
+      { success: false, message: err?.message || "Tải ảnh lên thất bại" },
       { status: 500 }
     );
   }

@@ -185,6 +185,7 @@ export default function TourDetail({ params }: PageProps) {
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [aprioriData, setAprioriData] = useState<any>({ rules: [], passengerRules: [], combos: [], tourCombos: [], tourServiceRules: [] });
   const [activePassengerTab, setActivePassengerTab] = useState<string>("all");
+  const [isExpandedDescription, setIsExpandedDescription] = useState<boolean>(false);
 
   useEffect(() => {
     const loadApriori = async () => {
@@ -556,13 +557,24 @@ export default function TourDetail({ params }: PageProps) {
             </div>
 
             {/* Tour Description */}
-            <div className=" font-sans  space-y-4">
+            <div className="font-sans space-y-4">
               <h2 className="text-lg md:text-xl font-bold text-text-primary flex items-center gap-2">
                 <div className="text-primary" /> Tổng quan tour
               </h2>
-              <p className="bg-white p-6 md:p-6 rounded-3xl shadow-xs text-sm md:text-base font-normal text-text-secondary tracking-normal text-justify">
-                {tour.description}
-              </p>
+              <div className="bg-white p-6 md:p-6 rounded-3xl shadow-xs text-sm md:text-base font-normal text-text-secondary tracking-normal text-justify">
+                <p className={isExpandedDescription ? "whitespace-pre-line leading-relaxed" : "line-clamp-4 leading-relaxed"}>
+                  {tour.description}
+                </p>
+                {tour.description && tour.description.length > 200 && (
+                  <button
+                    type="button"
+                    onClick={() => setIsExpandedDescription(!isExpandedDescription)}
+                    className="mt-3 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    {isExpandedDescription ? "Thu gọn ▲" : "Xem thêm ▼"}
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* About the Destination Block

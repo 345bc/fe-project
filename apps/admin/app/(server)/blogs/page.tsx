@@ -1,19 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteBlogButton from "@/components/DeleteBlogButton";
+import BlogsTable, { Blog } from "@/components/BlogsTable";
 
 const baseURL = "http://localhost:8080";
-
-export type Blog = {
-  id: number;
-  title: string;
-  author: string;
-  image: string;
-  views: number;
-  created_at: string;
-  blogCategories: { id: number; name: string } | null;
-};
 
 export default async function BlogsPage() {
   let data = null;
@@ -72,42 +62,9 @@ export default async function BlogsPage() {
         </div>
       )}
 
+      {/* Table Component with Live Search Bar */}
       {data && blogs.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tiêu đề</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tác giả</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Danh mục</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Lượt xem</th>
-                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {blogs.map((blog: Blog) => (
-                <tr key={blog.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900 max-w-[200px] truncate">{blog.title}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">{blog.author}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5">
-                    {blog.blogCategories ? (
-                      <span className="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">{blog.blogCategories.name}</span>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">{blog.views}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href={`/blogs/update?id=${blog.id}`} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">Sửa</Link>
-                      <DeleteBlogButton blogId={blog.id} blogTitle={blog.title} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <BlogsTable blogs={blogs} />
       )}
     </div>
   );

@@ -2,11 +2,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import DateRangeInputWithPresets from "@/components/ui/DateRange";
+import ExportReportButton from "@/components/ExportReportButton";
 interface PageProps {
-  searchParams: Promise<{ period?: string }>;
+  searchParams: Promise<{ period?: number }>;
 }
 export default async function AdminDashboard({ searchParams }: PageProps) {
-  const { period = "30d" } = await searchParams;
+  const { period = 90 } = await searchParams;
   let data = {
     revenue: 0,
     bookingsCount: 0,
@@ -27,29 +29,59 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
       redirect("/sign-in");
     }
 
-    const [bookingsRes, usersRes, toursRes, reviewsRes] = await Promise.all([
-      fetch("http://localhost:8080/bookings", {
+    const [rawBookingsRes, usersRes, toursRes, reviewsRes] = await Promise.all([
+      fetch(`http://localhost:8080/bookings`, {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }).then((r) => (r.ok ? r.json() : null)),
+      }),
       fetch("http://localhost:8080/users", {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }).then((r) => (r.ok ? r.json() : null)),
+      }),
       fetch("http://localhost:8080/tours", {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }).then((r) => (r.ok ? r.json() : null)),
+      }),
       fetch("http://localhost:8080/reviews", {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }).then((r) => (r.ok ? r.json() : null)),
+      }),
     ]);
 
-    const bookings = bookingsRes?.data || [];
-    const users = usersRes?.data || [];
-    const tours = toursRes?.data || [];
-    const reviews = reviewsRes?.data || [];
+    if (
+      rawBookingsRes.status === 401 ||
+      usersRes.status === 401 ||
+      toursRes.status === 401 ||
+      reviewsRes.status === 401
+    ) {
+      redirect("/sign-in");
+    }
+
+    const [bookingsJson, usersJson, toursJson, reviewsJson] = await Promise.all([
+      rawBookingsRes.ok ? rawBookingsRes.json() : null,
+      usersRes.ok ? usersRes.json() : null,
+      toursRes.ok ? toursRes.json() : null,
+      reviewsRes.ok ? reviewsRes.json() : null,
+    ]);
+
+    const rawBookings = bookingsJson?.data || [];
+    const users = usersJson?.data || [];
+    const tours = toursJson?.data || [];
+    const reviews = reviewsJson?.data || [];
+
+    // Filter bookings according to period (in days)
+    const days = Number(period) || 30;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    let bookings = [...rawBookings];
+    if (rawBookings.length > 0) {
+      bookings = rawBookings.filter((b: any) => {
+        const dateVal = b.createdAt || b.created_at || b.booking_date;
+        if (!dateVal) return true;
+        return new Date(dateVal) >= cutoff;
+      });
+    }
 
     data.bookingsCount = bookings.length;
     data.usersCount = users.length;
@@ -117,15 +149,9 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
             Chào mừng trở lại!
           </p>
         </div>
-        <div className="relative z-10 flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl text-sm font-medium border border-white/10">
-            <span className="material-symbols-outlined text-lg">calendar_month</span>
-            <span>Last 30 days</span>
-          </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 transition-colors px-4 py-2 rounded-xl text-sm font-medium shadow-md cursor-pointer">
-            <span className="material-symbols-outlined text-lg">download</span>
-            <span>Export Report</span>
-          </button>
+        <div className="relative z-10 flex flex-wrap items-end gap-3">
+          <DateRangeInputWithPresets />
+          <ExportReportButton />
         </div>
       </div>
 
@@ -366,7 +392,9 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
                           ? "bg-red-50 text-red-700"
                           : "bg-yellow-50 text-yellow-700"
                         }`}>
-                        {booking.status}
+                        {typeof booking.status === "object" && booking.status !== null
+                          ? (booking.status as any).name || JSON.stringify(booking.status)
+                          : String(booking.status || "")}
                       </span>
                     </div>
                   </div>
@@ -408,7 +436,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
                 <div className="mt-3 pt-2 border-t border-gray-200/50 flex justify-between items-center text-[10px] text-gray-400 font-medium">
                   <span>Mã đánh giá: #{review.id}</span>
                   <span className={`px-1.5 py-0.5 rounded font-bold ${review.status === "ACTIVE" ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"
-                    }`}>{review.status}</span>
+                    }`}>{typeof review.status === "object" && review.status !== null ? (review.status as any).name || JSON.stringify(review.status) : String(review.status || "")}</span>
                 </div>
               </div>
             ))

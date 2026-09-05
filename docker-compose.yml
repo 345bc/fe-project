@@ -1,0 +1,36 @@
+services:
+  client:
+    container_name: fe-client
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_PORT:-3001}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - fe-network
+
+  admin:
+    container_name: fe-admin
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - fe-network
+
+networks:
+  fe-network:
+    driver: bridge

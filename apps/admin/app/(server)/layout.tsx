@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Figtree } from "next/font/google";
 import Link from "next/link";
 import "@/app/globals.css";
+import "@astryxdesign/core/astryx.css";
+import "@astryxdesign/theme-neutral/theme.css";
 import LogoutButton from "@/components/logout-button";
-const inter = Inter({ subsets: ["latin"] });
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree" });
 
 export const metadata: Metadata = {
   title: "Admin Panel",
@@ -23,7 +25,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
         />
       </head>
-      <body className={inter.className}>
+      <body className={`${figtree.className} ${figtree.variable}`}>
         <div className="flex min-h-screen bg-gray-100">
           {/* Sidebar */}
           <aside className="w-64 bg-white-smoke border-r border-gray-200 flex flex-col">

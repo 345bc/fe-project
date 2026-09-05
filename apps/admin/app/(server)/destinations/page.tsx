@@ -1,17 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteDestinationButton from "@/components/DeleteDestinationButton";
-import Image from "next/image";
+import DestinationsTable, { Destination } from "@/components/DestinationsTable";
 
 const baseURL = "http://localhost:8080";
-
-export type destinations = {
-  id: number;
-  name: string;
-  image: string;
-  introduce: string;
-};
 
 export default async function DestinationPage() {
   let data = null;
@@ -45,14 +37,13 @@ export default async function DestinationPage() {
 
     data = await res.json();
   } catch (err: any) {
-    // redirect() throws a special NEXT_REDIRECT error — must re-throw it
     if (err?.digest?.startsWith("NEXT_REDIRECT")) {
       throw err;
     }
     error = err instanceof Error ? err.message : "Không thể tải danh sách điểm đến";
   }
 
-  const destinationsList: destinations[] = data?.data || [];
+  const destinationsList: Destination[] = data?.data || [];
 
   return (
     <div className="space-y-5">
@@ -99,66 +90,9 @@ export default async function DestinationPage() {
         </div>
       )}
 
-      {/* Table */}
+      {/* Table Component with Live Search Bar */}
       {data && destinationsList.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Hình ảnh
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Tên
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  mô tả
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Thao tác
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {destinationsList.map((item: destinations) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">
-                    <Image
-                      src={`/images/${item.image}`}
-                      alt="tour-images"
-                      width={100}
-                      height={200}
-                      //   className="w-full h-auto "
-                    />
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">
-                    {item.name}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">
-                    {item.introduce}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/destinations/update?id=${item.id}`}
-                        className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        Sửa
-                      </Link>
-                      <DeleteDestinationButton destinationId={item.id} destinationName={item.name} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DestinationsTable destinations={destinationsList} />
       )}
     </div>
   );

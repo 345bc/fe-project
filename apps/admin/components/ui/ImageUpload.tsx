@@ -81,11 +81,17 @@ export default function ImageUpload({
 
       {value ? (
         <div className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden border border-gray-200 bg-gray-50 group">
-          <Image
-            src={`/images/${value}`}
+          <img
+            src={
+              value.startsWith("http") || value.startsWith("/")
+                ? value
+                : `/images/${value}`
+            }
             alt="Upload preview"
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/images/demo_banner.jpg";
+            }}
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <button

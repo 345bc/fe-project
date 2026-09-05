@@ -1,33 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteTourButton from "@/components/DeleteTourButton";
-import Image from "next/image";
+import ToursTable, { Tour } from "@/components/ToursTable";
 
 const baseURL = "http://localhost:8080";
-
-export type Category = {
-  id: number;
-  name: string;
-  introduce: string;
-};
-
-export type Transport = {
-  id: number;
-  name: string;
-};
-
-export type Tour = {
-  id: number;
-  name: string;
-  price: number;
-  status: string;
-  duration: string;
-  categories: Category;
-  description: string;
-  image: string;
-  transports: Transport;
-};
 
 export default async function TourPage() {
   let data = null;
@@ -85,7 +61,7 @@ export default async function TourPage() {
           href="/tours/add"
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
         >
-          Thêm tour
+          Thêm Tour
         </Link>
       </div>
 
@@ -100,123 +76,21 @@ export default async function TourPage() {
       {/* Empty state */}
       {data && tour.length === 0 && (
         <div className="flex flex-col items-center py-16 text-center">
-          <p className="text-sm font-medium text-gray-900">
-            Chưa có tour dùng nào
-          </p>
+          <p className="text-sm font-medium text-gray-900">Chưa có tour nào</p>
           <p className="mt-1 text-sm text-gray-500">
-            Bắt đầu bằng cách thêm tour dùng đầu tiên.
+            Bắt đầu bằng cách thêm tour đầu tiên.
           </p>
           <Link
             href="/tours/add"
             className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
-            Thêm tour
+            Thêm Tour
           </Link>
         </div>
       )}
 
-      {/* Table */}
-      {data && tour.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Hình ảnh
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Tên
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  giá bán
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Trạng thái
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Thời gian
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Danh mục
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Mô tả
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Phương tiện
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Thao tác
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {tour.map((tour: Tour) => (
-                <tr
-                  key={tour.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">
-                    <Image
-                      src={`/images/${tour.image}`}
-                      alt="tour-images"
-                      width={200}
-                      height={200}
-                    />
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">
-                    {tour.name}
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600 font-medium">
-                    {Number(tour.price).toLocaleString("vi-VN")}₫
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">
-                    {tour.status}
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">
-                    {tour.duration}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-3.5">
-                    {tour.categories ? (
-                      <span className="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
-                        {tour.categories.name}
-                      </span>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">
-                    {tour.description}
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5">
-                    {tour.transports ? (
-                      <span className="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
-                        {tour.transports.name}
-                      </span>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/tours/update?id=${tour.id}`}
-                        className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        Sửa
-                      </Link>
-                      <DeleteTourButton tourId={tour.id} tourName={tour.name} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {/* Table Component with Live Search Bar */}
+      {data && tour.length > 0 && <ToursTable tours={tour} />}
     </div>
   );
 }

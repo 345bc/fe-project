@@ -35,14 +35,20 @@ const userService = {
 
     async patchUser(id, request) {
         try {
+            const payload = {
+                name: request.name,
+                email: request.email,
+                roles: Array.isArray(request.roles)
+                    ? request.roles.map(r => (typeof r === 'object' && r !== null ? r.name : r)).filter(Boolean)
+                    : request.roles,
+            };
+            if (request.password && String(request.password).trim() !== '') {
+                payload.passwordHash = request.password;
+            }
+
             const res = await tokenBearer.patch(
                 `${baseURL}/users/${id}`,
-                {
-                    name: request.name,
-                    email: request.email,
-                    password: request.password,
-                    roles: request.roles,
-                }
+                payload
             );
 
             return res.data.data;

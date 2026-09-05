@@ -1,14 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteTransportButton from "@/components/DeleteTransportButton";
+import TransportsTable, { Transport } from "@/components/TransportsTable";
 
 const baseURL = "http://localhost:8080";
-
-export type Transport = {
-  id: number;
-  name: string;
-};
 
 export default async function TransportsPage() {
   let data = null;
@@ -60,32 +55,9 @@ export default async function TransportsPage() {
         </div>
       )}
 
+      {/* Table Component with Live Search Bar */}
       {data && transports.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200 max-w-2xl">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">ID</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tên</th>
-                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 w-1/4">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {transports.map((t: Transport) => (
-                <tr key={t.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">#{t.id}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">{t.name}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href={`/transports/update?id=${t.id}`} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">Sửa</Link>
-                      <DeleteTransportButton transportId={t.id} transportName={t.name} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <TransportsTable transports={transports} />
       )}
     </div>
   );

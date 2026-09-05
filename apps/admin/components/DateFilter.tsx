@@ -4,10 +4,10 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const FILTER_OPTIONS = [
-    { label: "7 ngày qua", value: "7d" },
-    { label: "30 ngày qua", value: "30d" },
-    { label: "90 ngày qua", value: "90d" },
-    { label: "Tất cả thời gian", value: "all" },
+    { label: "7 ngày qua", value: "7" },
+    { label: "30 ngày qua", value: "30" },
+    { label: "90 ngày qua", value: "90" },
+    { label: "365 ngày qua", value: "365" },
 ];
 
 export default function DateFilter() {
@@ -15,7 +15,7 @@ export default function DateFilter() {
     const router = useRouter();
     const searchparams = useSearchParams();
 
-    const current = searchparams.get("period") || "30d";
+    const current = searchparams.get("period") || "30";
 
     const handSelectPeriod = (value: string) => {
         const param = new URLSearchParams(searchparams.toString());

@@ -1,15 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DeleteCategoryButton from "@/components/DeleteCategoryButton";
+import CategoriesTable, { Category } from "@/components/CategoriesTable";
 
 const baseURL = "http://localhost:8080";
-
-export type Category = {
-  id: number;
-  name: string;
-  introduce: string;
-};
 
 export default async function CategoriesPage() {
   let data = null;
@@ -61,32 +55,9 @@ export default async function CategoriesPage() {
         </div>
       )}
 
+      {/* Table Component with Live Search Bar */}
       {data && categories.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 w-1/4">Tên</th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Mô tả</th>
-                <th className="px-5 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 w-1/6">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {categories.map((c: Category) => (
-                <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-gray-900">{c.name}</td>
-                  <td className="px-5 py-3.5 text-sm text-gray-600 max-w-[400px] truncate">{c.introduce || "—"}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href={`/categories/update?id=${c.id}`} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">Sửa</Link>
-                      <DeleteCategoryButton categoryId={c.id} categoryName={c.name} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <CategoriesTable categories={categories} />
       )}
     </div>
   );

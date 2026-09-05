@@ -32,13 +32,15 @@ function UpdateUserPageContent() {
         const user = await userService.getUserById(userId);
         setName(user.name || "");
         setEmail(user.email || "");
-        setRoles(
-          Array.isArray(user.roles)
-            ? user.roles
-            : user.roles
-              ? [user.roles]
-              : ["USER"],
-        );
+        const rawRoles = user.roles;
+        const parsedRoles = Array.isArray(rawRoles)
+          ? rawRoles.map((r: any) => (typeof r === "object" && r !== null ? r?.name : r)).filter(Boolean)
+          : typeof rawRoles === "object" && rawRoles !== null && rawRoles?.name
+            ? [rawRoles.name]
+            : typeof rawRoles === "string"
+              ? [rawRoles]
+              : ["USER"];
+        setRoles(parsedRoles.length > 0 ? parsedRoles : ["USER"]);
       } catch (err: any) {
         setError(err?.message || "Không thể tải thông tin người dùng");
       } finally {
